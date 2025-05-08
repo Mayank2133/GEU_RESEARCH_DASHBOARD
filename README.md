@@ -1,40 +1,51 @@
-# GEU Login System
+# GEU Research Submission Portal
 
 ## 📌 Project Overview
-This is a **Login & Registration System** built with **HTML, CSS, JavaScript, and Node.js**. The system allows users to **register** and **log in**, storing user data in a JSON file. The staff dashboard displays user details upon successful login.
+A secure web portal for academic staff to submit research papers/journals, track grants, and manage submissions. Built with **Node.js**, **Express**, and **Bootstrap**.
 
-## 🚀 Features
-- **User Registration**: Users can sign up with an email and password.
-- **Login Authentication**: Validates user credentials against stored data.
-- **Data Persistence**: Stores registered users in a JSON file.
-- **Secure Password Handling**: Enforces password constraints (uppercase, special character, and length).
-- **Dynamic Dashboard**: Displays user information upon login.
+![Register Preview](./screenshots/register.png)
+![Login Preview](./screenshots/login.png)
+![Dashboard Preview](./screenshots/dashboard.png)
+![Research/Journal Submission Preview](./screenshots/research.png)
+![Submission Preview](./screenshots/submission.png)
 
-## 📂 Folder Structure
-```
-/geu-login
+## 🚀 Key Features
+- **Role-Based Access** (Staff/Dean/Accountant)
+- **Dual Submission System** (Research/Journal)
+- **Annual Grant Limits** (₹20k Research/₹30k Journal)
+- **PDF Validation** (10MB max, MIME type check)
+- **Dynamic Co-Author Management**
+- **Submission History Tracking**
+- **Secure Session Management**
+
+## 📂 Project Structure
+/research-portal
 ├── public
-│   ├── index.html          # Homepage
-│   ├── register.html       # User Registration Page
-│   ├── login.html          # User Login Page
-│   ├── staff-dashboard.html # Dashboard for logged-in users
-│   ├── assets/             # CSS, JS, Images
-│
-├── user_auth
-│   ├── users.json          # Stores registered users
-│   ├── server.js           # Node.js backend
-│
-├── .gitignore              # Excludes node_modules & logs
-├── package.json            # Node.js dependencies
-├── README.md               # Project documentation
-```
+│ ├── submitResearch.htm # Main submission form
+│ ├── past-submissions.html # Submission history
+│ ├── staff-dashboard.html # User dashboard
+│ ├── login.html # Login page
+│ ├── register.htm # Registration page
+│ └── assets/ # CSS/JS/Images
+├── uploads
+│ ├── submissions/ # Research PDF storage
+│ └── profile-pictures/ # User avatars
+├── models
+│ ├── users.json # User database
+│ └── submissions.json # Submission records
+├── server.js # Backend server
+├── package.json # Dependencies
+├── .env # Config file
+└── README.md # This documentation
+
+
 
 ## 🛠️ Setup Instructions
 
 ### 1️⃣ Install Dependencies
 Ensure **Node.js** is installed, then run:
 ```sh
-npm install
+npm install express body-parser bcrypt pdfkit multer axios dotenv
 ```
 
 ### 2️⃣ Start the Server
@@ -55,10 +66,29 @@ The server runs on **http://localhost:4000/**
 | POST   | /login      | Authenticates a user |
 | GET    | /dashboard  | Fetches user details |
 
-## 📌 Future Enhancements
-- Implement **MongoDB** for user authentication.
-- Add **JWT authentication** for better security.
-- Improve UI with Bootstrap & animations.
+## 🔒 Security Features
+-**reCAPTCHA v3 integration**
+
+-**Password hashing with bcrypt**
+
+-**Session cookie protection**
+
+-**File type validation**
+
+-**Input sanitization**
+
+## 📅 Future Roadmap
+-**MongoDB integration**
+
+-**Admin approval workflow**
+
+-**Email notifications**
+
+-**Multi-file upload support**
+
+-**PDF content analysis**
+
+
 
 ## 👨‍💻 Author
 [Mayank] - Developed as part of a learning project.
