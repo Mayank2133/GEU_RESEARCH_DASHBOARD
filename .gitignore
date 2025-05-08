@@ -1,0 +1,16 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment variables (if any)
+.env
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# JSON database file (optional, if you don't want to push user data)
+users.json

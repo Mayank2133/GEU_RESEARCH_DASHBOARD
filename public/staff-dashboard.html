@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <!-- Bootstrap JS (Required for Dropdowns & Components) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Font Awesome (For Bell Icon) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+
+    <style>
+
+       
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            background: #053980;
+            color: white;
+            padding: 15px;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1100;
+        }
+
+        /* Sidebar Hidden on Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Dashboard Heading */
+        .sidebar h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 22px;
+            color: white;
+            padding: 10px 0;
+            margin-top: 40px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+        }
+
+        .sidebar a:hover {
+            background: #495057;
+        }
+
+        .sidebar a.active {
+            background: #f8f9fa;
+            color: #053980;
+            font-weight: bold;
+        }
+
+        /* Main Content */
+        .main-container {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-y: auto;
+            margin-top: 60px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        /* Adjust Main Content When Sidebar is Collapsed */
+        @media (max-width: 768px) {
+            .main-container {
+                margin-left: 0;
+            }
+        }
+
+        
+        /* Top Navbar */
+        .topbar {
+            width: 100%;
+            background: #607899;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1200;
+        }
+        
+
+        .topbar .search-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .topbar .search-bar {
+            width: 200px;
+            border-radius: 20px;
+            padding: 5px 10px;
+            border: none;
+            outline: none;
+        }
+
+        .topbar .icon-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-left: 15px;
+            justify-content: flex-end;
+        }
+
+        .topbar .icon-links a {
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+        }
+
+       
+        .icon-circle {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+        }
+
+        .bg-primary {
+            background-color: #4e73df !important;
+        }
+
+        .small.text-gray-500 {
+            font-size: 12px;
+            color: gray;
+        }
+
+
+                        /* Sidebar Toggle Button */
+        .menu-btn {
+            background: white;
+            color: #007bff;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+
+        /* Hide Sidebar Toggle Button on Desktop */
+        @media (min-width: 769px) {
+            .menu-btn {
+                display: none;
+            }
+        }
+
+         /* Profile Picture Upload Modal */
+         #profileModal .modal-dialog {
+            margin-top: 60px;
+        }
+        
+        #profileModal .profile-img {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+        }
+        
+        #profileModal .profile-img-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        #profileModal .modal-body {
+            padding: 20px;
+        }
+        
+        #profileModal .modal-header {
+            background: #607899;
+            color: white;
+        }
+        
+        #fileInputLabel {
+            cursor: pointer;
+            display: inline-block;
+            padding: 6px 12px;
+            background: #053980;
+            color: white;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        
+        #fileInputLabel:hover {
+            background: #042a66;
+        }
+        
+        #profilePicture {
+            display: none;
+        }
+        /* Enhanced Personal Info Card */
+    #personal-info {
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        padding: 30px;
+        margin-top: 20px;
+    }
+
+    .info-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+        margin-top: 30px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        transition: transform 0.2s;
+    }
+
+    .info-item:hover {
+        transform: translateY(-3px);
+        background: #f1f3f5;
+    }
+
+    .info-icon {
+        font-size: 1.5rem;
+        margin-right: 15px;
+        color: #053980;
+        min-width: 35px;
+    }
+
+    .info-content {
+        flex-grow: 1;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #6c757d;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: #212529;
+        word-break: break-word;
+    }
+
+    @media (max-width: 768px) {
+        .info-section {
+            grid-template-columns: 1fr;
+        }
+        
+    }
+
+    /* Section Header */
+    .section-header {
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    .section-header h4 {
+        font-weight: 700;
+        color: #053980;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .section-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 3px;
+        background: #053980;
+    }
+    /* Profile Image Enhancements */
+    .profile-img-container {
+        position: relative;
+       
+        max-width: 150px;
+        margin: 0 auto;
+    }
+
+    .profile-img {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        width: 100px;  /* Reduced from 120px */
+        height: 100px; /* Reduced from 120px */
+        border: 2px solid #007bff; /* Thinner border */
+
+    }
+
+    .profile-img:hover {
+        transform: scale(1.05);
+        cursor: pointer;
+    }
+    #profilePreview {
+    width: 100%;
+    height: auto;
+    }
+
+        /* Add to your CSS */
+    .profile-frame {
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .profile-frame:hover {
+        transform: rotate(8deg) scale(1.05);
+    }
+
+    /* Ensure icon fills the circle */
+    .bi-person-circle {
+        background-color: #f8f9fa;
+        border-radius: 50%;
+    }
+
+        
+    </style>
+</head>
+<body>
+
+    
+   
+<!-- Top Navigation Bar -->
+<div class="topbar">
+    <button class="menu-btn" id="menuToggle"><i class="bi bi-list"></i></button>
+    <img src="./images/geu_card_top.png" class="image-fluid w-100" style="width: 200px;height: 50px;  max-width: 200px;">
+    <div class="icon-links ms-auto d-flex align-items-center gap-3">
+            <a href="#" data-bs-toggle="modal" data-bs-target="#profileModal"><i class="bi bi-gear-fill"></i></a>
+            <button id="logoutBtn" class="btn btn-danger">
+                <i class="bi bi-box-arrow-right"></i> Logout
+            </button>
+            
+    </div>
+   
+    <!-- Profile Picture Settings Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Profile Settings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="profile-img-container">
+                        <img id="profilePreview" src="" class="profile-img" style="display: none;">
+                        <i id="defaultProfileIcon" class="bi bi-person-circle profile-img"></i>
+                    </div>
+                    <label for="profilePicture" id="fileInputLabel">
+                        <i class="bi bi-upload"></i> Change Profile Picture
+                    </label>
+                    <input type="file" id="profilePicture" accept="image/*">
+                    <div class="mt-3">
+                        <small class="text-muted">Max file size: 2MB (JPG, PNG)</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveProfilePicture">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+
+    
+    
+
+
+<!-- Sidebar Navigation -->
+<div class="sidebar" id="sidebar">
+    <i class="bi bi-grid-fill"><h3>Dashboard</h3></i> 
+    <a href="staff-dashboard.html" class="sidebar-link"><i class="bi bi-person"></i> Personal Information</a>
+    <a href="submitResearch.htm" class="sidebar-link"><i class="bi bi-file-earmark-plus"></i> Submit Research Paper</a>
+    <a href="past-submissions.html" class="sidebar-link"><i class="bi bi-folder"></i> Past Submissions</a>
+    
+</div>
+
+<!-- Main Content -->
+<div class="main-container" id="mainContent">
+    <h2><span id="headuserName">[Staff Name]</span></h2>
+
+    <!-- Personal Information Section -->
+     
+    <div id="personal-info" class="card">
+        <div class="section-header">
+            <h4>Personal Information</h4>
+        </div>
+
+            
+        <!-- Update profile container -->
+        <div class="profile-img-container mb-4 text-center">
+            <div class="profile-frame rounded-circle overflow-hidden" 
+                style="width: 120px; height: 120px; border: 3px solid #007bff;">
+                <img id="mainProfileImage" src="" 
+                    class="w-100 h-100 object-fit-cover" 
+                    style="display: none;">
+                <i id="defaultProfileIcon" 
+                class="bi bi-person-circle w-100 h-100 d-flex align-items-center justify-content-center" 
+                style="font-size: 4rem; color: #007bff;"></i>
+            </div>
+        </div>
+       
+        
+       
+        <div class="info-section">
+            <div class="info-item">
+                <i class="bi bi-person-fill info-icon"></i>
+                <div class="info-content">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value" id="userName">[Staff Name]</div>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="bi bi-briefcase-fill info-icon"></i>
+                <div class="info-content">
+                    <div class="info-label">Designation</div>
+                    <div class="info-value" id="userdesignation">[Designation]</div>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="bi bi-envelope-fill info-icon"></i>
+                <div class="info-content">
+                    <div class="info-label">Email Address</div>
+                    <div class="info-value" id="userEmail">[Email]</div>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="bi bi-telephone-fill info-icon"></i>
+                <div class="info-content">
+                    <div class="info-label">Contact Number</div>
+                    <div class="info-value" id="userphno">[Phone Number]</div>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="bi bi-person-badge-fill info-icon"></i>
+                <div class="info-content">
+                    <div class="info-label">Role</div>
+                    <div class="info-value" id="userRole">[Role]</div>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="bi bi-building info-icon"></i>
+                <div class="info-content">
+                    <div class="info-label">Department</div>
+                    <div class="info-value">Computer Science & Engineering</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+                
+</div>
+
+<script>
+    const sidebar = document.getElementById("sidebar");
+    const menuToggle = document.getElementById("menuToggle");
+
+    menuToggle.addEventListener("click", function () {
+        sidebar.classList.toggle("open");
+    });
+
+    if (window.innerWidth > 768) {
+        sidebar.classList.add("open");
+    }
+
+    // Profile Picture Upload Handling
+    document.addEventListener("DOMContentLoaded", function() {
+        const profilePictureInput = document.getElementById('profilePicture');
+        const profilePreview = document.getElementById('profilePreview');
+        const defaultProfileIcon = document.getElementById('defaultProfileIcon');
+        const saveProfileBtn = document.getElementById('saveProfilePicture');
+        const mainProfileImg = document.querySelector('.profile-img-container .profile-img');
+
+        // Preview image when selected
+        profilePictureInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('File size exceeds 2MB limit');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    profilePreview.src = event.target.result;
+                    profilePreview.style.display = 'block';
+                    defaultProfileIcon.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Replace the existing fetch code with this:
+        fetch("/api/user", { credentials: 'include' })
+            .then(res => res.json())
+            .then(data => {
+                const mainProfileImg = document.getElementById('mainProfileImage');
+                const defaultIcon = document.getElementById('defaultProfileIcon');
+                
+                if (data.user?.profileUrl) {
+                    mainProfileImg.src = data.user.profileUrl;
+                    mainProfileImg.style.display = 'block';
+                    defaultIcon.style.display = 'none';
+                } else {
+                    mainProfileImg.style.display = 'none';
+                    defaultIcon.style.display = 'block';
+                }
+            });
+
+       
+
+
+        // Replace the saveProfileBtn event listener with this:
+        saveProfileBtn.addEventListener('click', async function() {
+            const file = profilePictureInput.files[0];
+            if (!file) {
+                alert('Please select a picture first');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('profilePicture', file);
+
+            try {
+                const response = await fetch('/api/upload-profile-picture', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    // Update main profile image
+                    const mainProfileImg = document.getElementById('mainProfileImage');
+                    const defaultIcon = document.getElementById('defaultProfileIcon');
+                    
+                    mainProfileImg.src = data.profileUrl + '?t=' + Date.now(); // Cache bust
+                    mainProfileImg.style.display = 'block';
+                    defaultIcon.style.display = 'none';
+                    
+                    // Close the modal
+                    bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+                    alert('Profile picture updated successfully!');
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to update profile picture'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while uploading the picture');
+            }
+        });
+    });    
+        
+        
+        
+</script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+          try {
+            const response = await fetch("/api/user",{
+                credentials:'include'
+            });
+            const data = await response.json();
+      
+            if (response.ok) {
+              const user = data.user;
+              document.getElementById("headuserName").textContent = user.name;
+              document.getElementById("userName").textContent = user.name;
+              document.getElementById("userEmail").textContent = user.email;
+              document.getElementById("userRole").textContent = user.role;
+              document.getElementById("userdesignation").textContent = user.designation;
+              document.getElementById("userphno").textContent = user.phno;
+ 
+                       
+
+                
+            } else {
+              alert("You are not logged in!");
+              window.location.href = "login.html";
+            }
+          } catch (error) {
+            console.error("Error fetching user data:", error);
+            alert("Session expired or server error.");
+            window.location.href = "login.html";
+          }
+        });
+      </script>
+      
+    <!--Logout Script-->
+    <script>
+        document.getElementById("logoutBtn").addEventListener("click", async function () {
+            fetch("http://localhost:4000/logout", {
+            method: "POST",
+            credentials: "include"
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = "login.html";
+            } else {
+                alert("Logout failed");
+            }
+        });
+
+        });
+
+    </script>
+    
+    
+    
+
+</body>
+</html>

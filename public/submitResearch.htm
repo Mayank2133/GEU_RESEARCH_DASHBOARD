@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+    <style>
+        .topbar {
+            width: 100%;
+            background: #607899;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1200;
+        }
+
+        .topbar .icon-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .topbar .search-bar {
+            width: 200px;
+            border-radius: 20px;
+            padding: 5px 10px;
+            border: none;
+            outline: none;
+        }
+
+        .topbar .icon-links {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+            margin-left: 15px;
+        }
+
+        .topbar .icon-links a {
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        /* Sidebar Toggle Button */
+        .menu-btn {
+            background: white;
+            color: #007bff;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+
+        /* Hide Sidebar Toggle Button on Desktop */
+        @media (min-width: 769px) {
+            .menu-btn {
+                display: none;
+            }
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            background: #053980;
+            color: white;
+            padding: 15px;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1100;
+        }
+
+        /* Sidebar Hidden on Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Dashboard Heading */
+        .sidebar h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 22px;
+            color: white;
+            padding: 10px 0;
+            margin-top: 40px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #495057;
+        }
+
+        .sidebar a.active {
+            background: #f8f9fa;
+            color: #053980;
+            font-weight: bold;
+        }
+
+        /*Main container*/
+        .main-container {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-y: auto;
+            margin-top: 60px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .main-container h3{
+            text-align: center;
+        }
+
+        .main-container form{
+            margin-top: 10px;
+        }
+
+        /* Adjust Main Content When Sidebar is Collapsed */
+        @media (max-width: 768px) {
+            .main-container {
+                margin-left: 0;
+            }
+        }
+
+
+        .form-group{
+            margin-bottom: 10px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+     .co-author-container {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 10px; /* Space between fields */
+     } 
+     #coAuthorFields {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 98%;
+            margin-left: 10px;
+        }
+
+        .co-author-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .co-author-field {
+            width: 48%; /* Exactly 2 fields per row */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .co-author-field {
+                width: 100%; /* 1 field per row on small screens */
+            }
+        }
+
+        p {
+            color: red;
+            
+        }
+
+        #customFile {
+            width: 1170px;
+        
+           padding-left: 10px;
+           
+           margin-left: 20px;
+          
+        }
+
+        #Declaration {
+            color: red;
+            text-shadow: h-100;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            text-decoration: solid;
+        }
+
+        button:disabled {
+        background-color: #ccc;
+        color: #666;
+        cursor: not-allowed;
+        }
+
+        .form-section {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        }
+
+        /* Add to your style section */
+        .spinner-border {
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+        .grant-error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+
+
+
+
+
+        
+
+    </style>
+
+    </head>
+<body>
+    
+ <div class="topbar">
+    <button class="menu-btn" id="menuToggle"><i class="bi bi-list"></i></button>
+    <img src="geu_card_top.png" class="image-fluid w-100" style="width: 200px;height: 50px;  max-width: 200px;">
+    
+    <div class="icon-container">
+        <h3>Research Portal</h3>
+
+        <div class="icon-links">
+            <a href="staff-dashboard.html" id="logout"><i class="bi bi-house-door"></i></i></a>
+        </div>
+    </div>
+ </div>
+
+ <!-- Sidebar Navigation -->
+ <div class="sidebar" id="sidebar">
+    <i class="bi bi-grid-fill"><h3>Dashboard</h3></i> 
+    <a href="staff-dashboard.html" class="sidebar-link"><i class="bi bi-person"></i> Personal Information</a>
+    <a href="submitResearch.htm" class="sidebar-link"><i class="bi bi-file-earmark-plus"></i> Submit Research Paper</a>
+    <a href="past-submissions.html" class="sidebar-link"><i class="bi bi-folder"></i> Past Submissions</a>
+    
+ </div>
+
+ <!--Main Content-->
+ <div class="main-container" id="mainContent">
+    <h3>Form Submission</h3>
+    <form action="/Submit-Grant" method="POST" enctype="multipart/form-data">
+        <label for="submissionType">Select Submission Type:</label>
+        <select id="submissionType" name="submissionType" class="form-select">
+         <option value="">-- Select --</option>
+         <option value="research">Research Paper</option>
+         <option value="journal">Journal</option>
+        </select>
+
+        <!-- Research Form Section -->
+        <div id="researchForm" class="form-section" style="display: none;">
+            <!-- Personal Info -->
+            <h2>Personal Information</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control" name="research_name" placeholder="Name" required data-required>
+                </div>
+                <div class="form-group">
+                    <label>Email address</label>
+                    <input type="email" class="form-control"  name="research_email" placeholder="name@example.com" required data-required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" class="form-control" name="research_tel" placeholder="Enter No." required data-required>
+                </div>
+            </div>
+            <!-- Conference Info -->
+            <h2>Conference Info:</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Conference Name:</label>
+                            <input type="text" class="form-control" name="research_conference_name" placeholder="Name" required data-required>
+
+                        </div>
+                    
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Conference Date:</label>
+                            <input type="date" name="research_conference_date" class="form-control" required data-required>
+
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Venue:</label>
+                            <input type="text" class="form-control" name="research_venue" placeholder="Venue" required data-required>
+
+                        </div>
+                    
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Last Date Of Registration:</label>
+                            <input type="date" name="research_last_date" class="form-control" required data-required>
+
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                
+                <div class="form-group">
+
+                    <label>Paper Title:</label>
+                    <input type="text" class="form-control" name="research_paper_title" placeholder="title" required data-required>
+
+                    <label>Number of Co-Authors:</label>
+                    <select id="researchCoAuthorCount" name="research_coauthor_count" class="form-select" required data-required>
+                        <option value="0">None</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        
+                    </select>
+                </div>
+
+                <!-- Container for dynamically added co-author fields -->
+                <div id="researchCoAuthorFields"  class="row mt-3" name="coAuthorFields"></div>
+
+
+            </div>
+            <h2>Bank Details:</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>Bank Name</label>
+                        <input type="text" class="form-control"  name="research_bank_name" placeholder="Name" required data-required>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <input type="number" class="form-control"  name="research_account_number" placeholder="A/C N0." required data-required>
+                    </div>
+                    <div class="form-group">
+                        <label>IFSC Code</label>
+                        <input type="text" class="form-control" name="research_ifsc" placeholder="IFSC" required data-required>
+                    </div>
+            </div>
+
+            <h2>Charges Details(Maximum 20000 Rs. in a Year):</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Registration Fee:</label>
+                                <input type="number" class="form-control" placeholder="Amount" name="research_rf" required data-required>
+        
+                            </div>
+                        
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Travelling Charges:</label>
+                                <input type="number"  class="form-control" placeholder="Amount" name="research_tc" required data-required>
+        
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Lodging Charges:</label>
+                                <input type="number"  class="form-control" placeholder="Amount" name="research_lc" required data-required>
+        
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Grant Amount</label>
+                        <input type="number" class="form-control" placeholder="Amount" name="research_tga" required data-required>
+                    </div>
+                
+            </div>
+            <h2>File(s) Submission</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                    <p><strong>
+                        All The Files Mentioned should be clubbed in a single PDF. File(Make Sure to include everything mentioned)
+                        1. Conference Acceptance Letter
+                        2. Plagiarism certificate
+                        3. First page of paper
+                        4. Registration page of Conference Broucher
+                        5. Proof of Payment
+                        6. Proof of Citation
+                    </strong></p>
+                    <label>Include File Here:</label>
+                    <input type="file" class="form-control" name="research_customFile" required data-required/>
+
+            </div>
+
+            <div name="research_declaration" class="form-check">
+                    <input class="form-check-input" type="checkbox" name="research_dec" value="dec" required data-required>
+                    <label class="form-check-label">The above said research work is original and not published in any conference/journal/book/thesis research paper form.*</label>
+            </div>
+           
+                
+                
+                    
+            
+        
+                
+        
+                
+
+
+
+
+        
+        
+        </div>
+        <!-- Journal Form Section -->
+        <div id="journalForm" class="form-section" style="display: none;">
+            <!-- Personal Info -->
+            <h2>Personal Information</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control" name="journal_name" placeholder="Name" required data-required>
+                </div>
+                <div class="form-group">
+                    <label>Email address</label>
+                    <input type="email" class="form-control"  name="journal_email" placeholder="name@example.com" required data-required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" class="form-control" name="journal_tel" placeholder="Enter No." required data-required>
+                </div>
+            </div>
+            <!-- Conference Info -->
+            <h2>Conference Info:</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Conference Name:</label>
+                            <input type="text" class="form-control" name="journal_conference_name" placeholder="Name" required data-required>
+
+                        </div>
+                    
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Conference Date:</label>
+                            <input type="date" name="journal_conference_date" class="form-control" required data-required>
+
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Venue:</label>
+                            <input type="text" class="form-control" name="journal_venue" placeholder="Venue" required data-required>
+
+                        </div>
+                    
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>Last Date Of Registration:</label>
+                            <input type="date" name="journal_last_date" class="form-control" required data-required>
+
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                
+                <div class="form-group">
+
+                    <label>Paper Title:</label>
+                    <input type="text" class="form-control" name="journal_paper_title" placeholder="title" required data-required>
+
+                    <label>Number of Co-Authors:</label>
+                    <select id="journalCoAuthorCount" name="journal_coauthor_count" class="form-select" required data-required>
+                        <option value="0">None</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        
+                    </select>
+                </div>
+
+                <!-- Container for dynamically added co-author fields -->
+                <div id="journalCoAuthorFields"  class="row mt-3" name="coAuthorFields"></div>
+
+
+            </div>
+            <h2>Bank Details:</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label>Bank Name</label>
+                        <input type="text" class="form-control"  name="journal_bank_name" placeholder="Name" required data-required>
+                    </div>
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <input type="number" class="form-control"  name="journal_account_number" placeholder="A/C N0." required data-required>
+                    </div>
+                    <div class="form-group">
+                        <label>IFSC Code</label>
+                        <input type="text" class="form-control" name="journal_ifsc" placeholder="IFSC" required data-required>
+                    </div>
+            </div>
+
+            <h2>Charges Details(Maximum 20000 Rs. in a Year):</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Registration Fee:</label>
+                                <input type="number" class="form-control" placeholder="Amount" name="journal_rf" required data-required>
+        
+                            </div>
+                        
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Travelling Charges:</label>
+                                <input type="number"  class="form-control" placeholder="Amount" name="journal_tc" required data-required>
+        
+                            </div>
+                            
+                            
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label>Lodging Charges:</label>
+                                <input type="number"  class="form-control" placeholder="Amount" name="journal_lc" required data-required>
+        
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Grant Amount</label>
+                        <input type="number" class="form-control" placeholder="Amount" name="journal_tga" required data-required>
+                    </div>
+                
+            </div>
+            <h2>File(s) Submission</h2>
+            <div class="card border-left-primary shadow h-100 py-2 text-center" style="margin-bottom: 20px;">
+                    <p><strong>
+                        All The Files Mentioned should be clubbed in a single PDF. File(Make Sure to include everything mentioned)
+                        1. Conference Acceptance Letter
+                        2. Plagiarism certificate
+                        3. First page of paper
+                        4. Registration page of Conference Broucher
+                        5. Proof of Payment
+                        6. Proof of Citation
+                    </strong></p>
+                    <label>Include File Here:</label>
+                    <input type="file" class="form-control" name="journal_customFile" required data-required/>
+
+            </div>
+
+            <div name="journal_declaration" class="form-check">
+                    <input class="form-check-input" type="checkbox" name="journal_dec" value="dec" required data-required>
+                    <label class="form-check-label">The above said journal work is original and not published in any conference/journal/book/thesis journal paper form.*</label>
+            </div>
+           
+
+                
+                
+                    
+            
+        
+                
+        
+                
+
+
+
+
+        
+        
+        </div>
+        <button type="submit" name="submit_type" class="btn btn-primary">Submit</button>
+
+
+    </form>        
+
+ </div>
+        
+          
+          
+
+        
+        
+        
+
+    
+ </div>
+
+
+ <!-- Scripts -->
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+ <script src="/js/submitResearch.js"></script>
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 
+    
+
+ 
+ 
+
+
+   
+    
+
+</body>
+</html>

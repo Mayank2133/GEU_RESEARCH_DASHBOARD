@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Login page">
+        <meta name="author" content="Mayank Srivastava & Shikhar Tomar">
+    
+        <title>geu - Register</title>
+    
+        <!-- Custom fonts for this template-->
+        <link href="vendor\fontawesome-free\css\all.min.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    
+        <!-- Custom styles for this template-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+        <style>
+            body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+           
+            z-index: -1;
+        }
+
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.25);
+            border-color: #0d6efd;
+        }
+
+        .btn-link:hover {
+            color: #0d6efd !important;
+        }
+
+        .card {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .h2 {
+            color: black;
+        }
+        
+        
+
+        
+        </style>
+    
+    </head>
+
+    <body>
+        <div class="container-fluid min-vh-100 d-flex justify-content-center align-items-center p-3">
+            
+                <div class="col-12 col-lg-8 col-xl-6 d-flex justify-content-center align-items-center" style="background: url(./images/geuHome\(Deemed\).jpg) no-repeat center center/cover; min-height: 100vh; width: 100vw;">
+                    <div class="card p-4 p-md-5 text-center" style="max-width: 700px; width: 100%; background: rgba(255,255,255,0.85); border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <img src="./images/geu_card_top.png" alt="card-top" class="image-fluid mx-auto mb-4" style="width: min(70%, 220px); height: auto; margin-bottom: 15px;">
+                        <h2 class="mb-4">User Registration</h2>
+                        <form class="needs-validation" novalidate>
+                            <div class="form-group mb-4">
+                                <select class="form-select form-select-lg" id="role" required>
+                                    <option value="" selected disabled>Choose Role</option>
+                                    <option value="Director">Director</option>
+                                    <option value="Vice Chancellor">Vice Chancellor</option>
+                                    <option value="Dean">Dean</option>
+                                    <option value="Asst_Dean">Assistant Dean</option>
+                                    <option value="Dean">Dean</option>
+                                    <option value="PA">PA</option>
+                                    <option value="Accountant">Accountant</option>
+                                    <option value="Staff">Staff</option>
+                                
+                                   
+                                  
+                                   
+                                </select>
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="form-group col-12 col-md-6 mb-3">
+                                   
+                                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" required>
+                                </div>
+                                <div class="form-group col-12 col-md-6"> 
+                                   
+                                    <input type="text" class="form-control" id="examplename" aria-describedby="nameHelp" placeholder="Enter Name" required>
+                                </div>
+                                
+                                  
+                            </div>
+                            <div class="form-row row g-3 mb-4">
+                                <div class="form-group col-md-6 mb-3">
+                                   
+                                    <input type="text" class="form-control" id="exampleDesignation" aria-describedby="DesignationHelp" placeholder="Enter Designation..." required>
+                                </div>
+                                <div class="form-group col-12 col-md-6"> 
+                                   
+                                    <input type="tel" class="form-control" id="examplephone" aria-describedby="phoneHelp" placeholder="Enter Phone Number..." required>
+                                </div>
+                                
+                                  
+                            </div>
+                            <div class="form-row row g-3 mb-4">
+                                <div class="form-group col-md-6 mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-lock-fill"></i>
+                                        </span>
+                                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Enter Password" required>
+                                        <span class="input-group-text">
+                                            <i class="bi bi-eye-slash" id="togglepassword1" style="cursor: pointer;"></i>
+                                          </span>
+
+                                    </div>
+                                    
+                                </div>
+                                <div class="form-group col-md-6 mb-3">
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="bi bi-lock-fill"></i>
+                                        </span>
+                                        <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm Password" required>
+                                        <span class="input-group-text">
+                                            <i class="bi bi-eye-slash" id="togglepassword2" style="cursor: pointer;"></i>
+                                          </span>
+
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                            
+                            
+                            <button type="submit" class="btn btn-primary btn-lg w-100 mb-4 fw-bold">
+                                Create Account
+                            </button>
+                          </form>
+                        <div class="text-center">
+                            <a href="login.html" class="text-decoration-none text-muted"><i class="bi bi-arrow-left me-2"></i>Back To Login!</a>
+                        </div>
+                    </div>
+                </div>
+                   
+            
+             
+        </div>
+
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const form = document.querySelector(".needs-validation");
+                const passwordInput = document.getElementById("exampleInputPassword1");
+                const confirmPasswordInput = document.getElementById("confirmPassword");
+                const togglePassword1 = document.getElementById("togglepassword1");
+                const togglePassword2 = document.getElementById("togglepassword2");
+
+
+                function validatePassword() {
+                    const password = passwordInput.value;
+                    const regex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$/;
+
+                    passwordInput.setCustomValidity(
+                        !regex.test(password)
+                            ? "Password must have at least 6 characters, one uppercase letter, and one special character."
+                            : ""
+                    );
+                    passwordInput.reportValidity();
+                }
+
+                function checkPasswordsMatch() {
+                    confirmPasswordInput.setCustomValidity(
+                        passwordInput.value !== confirmPasswordInput.value
+                            ? "Passwords do not match."
+                            : ""
+                    );
+                    confirmPasswordInput.reportValidity();
+                }
+
+                function togglePasswordVisibility(inputField, icon) {
+                    inputField.type = inputField.type === "password" ? "text" : "password";
+                    icon.classList.toggle("bi-eye");
+                    icon.classList.toggle("bi-eye-slash");
+                }
+
+                passwordInput.addEventListener("input", validatePassword);
+                confirmPasswordInput.addEventListener("input", checkPasswordsMatch);
+
+                if (togglePassword1) {
+                    togglePassword1.addEventListener("click", () => {
+                        togglePasswordVisibility(passwordInput, togglePassword1);
+                    });
+                }
+                if (togglePassword2) {
+                    togglePassword2.addEventListener("click", () => {
+                        togglePasswordVisibility(confirmPasswordInput, togglePassword2);
+                    });
+                }
+
+
+                form.addEventListener("submit", async function (e) {
+                    e.preventDefault();
+
+                    const role = document.getElementById("role").value;
+                    const email = document.getElementById("exampleInputEmail1").value;
+                    const name = document.getElementById("examplename").value;
+                    const designation=document.getElementById("exampleDesignation").value;
+                    const phno=document.getElementById("examplephone").value;
+                    const password = passwordInput.value;
+                    const confirmPassword = confirmPasswordInput.value;
+
+                    if (!role || !email || !name || !designation || !phno || !password || !confirmPassword) {
+                        alert("Please fill all the fields!");
+                        return;
+                    }
+
+                    if (password !== confirmPassword) {
+                        alert("Passwords do not match!");
+                        return;
+                    }
+
+                    const response = await fetch("http://localhost:4000/register", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ role, email, name, designation, phno, password }),
+                    });
+
+                    const result = await response.json();
+                    alert(result.message);
+
+                    if (response.ok) {
+                        window.location.href = "login.html";
+                    }
+                });
+            });
+
+        </script>
+        
+        
+        
+
+
+            
+    </body>
+       
+</html>
+
+
+

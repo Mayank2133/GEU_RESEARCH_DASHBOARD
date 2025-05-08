@@ -1,0 +1,41 @@
+[
+  {
+    "submissionType": "research",
+    "user": {
+      "email": "mayank123@gmail.com",
+      "name": "Mayank Srivastava"
+    },
+    "researchDetails": {
+      "title": "Conference",
+      "conference": "Geu",
+      "date": "2025-05-08",
+      "venue": "Dehradun",
+      "coAuthors": "1"
+    },
+    "financials": {
+      "registrationFee": 111,
+      "travelCharges": 2222,
+      "lodgingCharges": 3000,
+      "totalAmount": 5333,
+      "grantType": "research",
+      "remainingBalance": 14667
+    },
+    "bankDetails": {
+      "name": "SBI",
+      "accountNumber": "1234567890",
+      "ifsc": "1006"
+    },
+    "files": {
+      "receiptPath": "C:\\Users\\Mayank\\Desktop\\login\\geu.login\\uploads\\mayank123@gmail.com-1745825303039-876453433.pdf",
+      "originalName": "Conference-Grant-Form.pdf"
+    },
+    "declaration": {
+      "accepted": false,
+      "timestamp": "2025-04-28T07:28:23.043Z"
+    },
+    "metadata": {
+      "status": "pending",
+      "submittedAt": "2025-04-28T07:28:23.043Z"
+    }
+  }
+]

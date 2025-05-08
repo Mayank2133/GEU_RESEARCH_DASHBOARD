@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Past Submissions</title>
+
+
+     <!-- Bootstrap CSS -->
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+     <!-- Font Awesome -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+
+    <style>
+         .topbar {
+            width: 100%;
+            background: #607899;
+            color: white;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1200;
+        }
+
+        .topbar .icon-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .topbar .search-bar {
+            width: 200px;
+            border-radius: 20px;
+            padding: 5px 10px;
+            border: none;
+            outline: none;
+        }
+
+        .topbar .icon-links {
+            display: flex;
+            align-items: center;
+            gap: 35px;
+            margin-left: 15px;
+        }
+
+        .topbar .icon-links a {
+            color: white;
+            font-size: 20px;
+            text-decoration: none;
+            margin-bottom: 10px;
+        }
+
+        /* Sidebar Toggle Button */
+        .menu-btn {
+            background: white;
+            color: #007bff;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 20px;
+            margin-right: 15px;
+        }
+
+        /* Hide Sidebar Toggle Button on Desktop */
+        @media (min-width: 769px) {
+            .menu-btn {
+                display: none;
+            }
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            background: #053980;
+            color: white;
+            padding: 15px;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease-in-out;
+            z-index: 1100;
+        }
+
+        /* Sidebar Hidden on Mobile */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-250px);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+
+        /* Dashboard Heading */
+        .sidebar h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            font-size: 22px;
+            color: white;
+            padding: 10px 0;
+            margin-top: 40px;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #495057;
+        }
+
+        .sidebar a.active {
+            background: #f8f9fa;
+            color: #053980;
+            font-weight: bold;
+        }
+
+        /*Main container*/
+        .main-container {
+            margin-left: 260px;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-y: auto;
+            margin-top: 60px;
+            transition: margin-left 0.3s ease-in-out;
+        }
+
+        .main-container h3{
+            text-align: center;
+        }
+
+          /* Adjust Main Content When Sidebar is Collapsed */
+          @media (max-width: 768px) {
+            .main-container {
+                margin-left: 0;
+            }
+        }
+
+        :root {
+            --primary-color: #053980;
+            --secondary-color: #607899;
+            --accent-color: #4e73df;
+        }
+        
+        .submission-card {
+            border-left: 5px solid var(--accent-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+            margin-bottom: 1.5rem;
+        }
+        
+        .submission-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+        }
+        
+        .research-badge {
+            background-color: #4e73df;
+        }
+        
+        .journal-badge {
+            background-color: #1cc88a;
+        }
+        
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .status-approved {
+            color: #1cc88a;
+        }
+        
+        .status-pending {
+            color: #f6c23e;
+        }
+        
+        .status-rejected {
+            color: #e74a3b;
+        }
+        
+        .download-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+        }
+        
+        .download-btn:hover {
+            background-color: #2e59d9;
+            color: white;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            color: #dee2e6;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 10px;
+        }
+        
+        /* Animation for loading */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .submission-entry {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+
+
+
+        
+
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <button class="menu-btn" id="menuToggle"><i class="bi bi-list"></i></button>
+        <img src="geu_card_top.png" class="image-fluid w-100" style="width: 200px;height: 50px;  max-width: 200px;">
+        
+        <div class="icon-container">
+            <h3>Past Submissions</h3>
+    
+            <div class="icon-links">
+                <a href="staff-dashboard.html" id="logout"><i class="bi bi-house-door"></i></i></a>
+            </div>
+        </div>
+     </div>
+    
+     <!-- Sidebar Navigation -->
+     <div class="sidebar" id="sidebar">
+        <i class="bi bi-grid-fill"><h3>Dashboard</h3></i> 
+        <a href="staff-dashboard.html" class="sidebar-link"><i class="bi bi-person"></i> Personal Information</a>
+        <a href="submitResearch.htm" class="sidebar-link"><i class="bi bi-file-earmark-plus"></i> Submit Research Paper</a>
+        <a href="past-submissions.html" class="sidebar-link"><i class="bi bi-folder"></i> Past Submissions</a>
+        
+     </div>
+     <div class="main-container" id="mainContent">
+        <div class="container-fluid">
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Past Submissions</h1>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="filterDropdown" 
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                        <li><a class="dropdown-item filter-option active" href="#" data-filter="all">All Submissions</a></li>
+                        <li><a class="dropdown-item filter-option" href="#" data-filter="research">Research Papers</a></li>
+                        <li><a class="dropdown-item filter-option" href="#" data-filter="journal">Journals</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item filter-option" href="#" data-filter="approved">Approved</a></li>
+                        <li><a class="dropdown-item filter-option" href="#" data-filter="pending">Pending</a></li>
+                        <li><a class="dropdown-item filter-option" href="#" data-filter="rejected">Rejected</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            
+            <!-- Submissions Timeline -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Your Submission History</h6>
+                            <div class="dropdown no-arrow">
+                                <a class="dropdown-toggle" href="#" role="button" id="timelineDropdown" 
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow animated--fade-in" 
+                                    aria-labelledby="timelineDropdown">
+                                   
+                                    <li><a class="dropdown-item" href="#" id="printBtn">Print List</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <!-- Loading Indicator -->
+                            <div id="loadingIndicator" class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading your submissions...</p>
+                            </div>
+                            
+                            <!-- Empty State -->
+                            <div id="emptyState" class="empty-state" style="display: none;">
+                                <i class="far fa-file-alt"></i>
+                                <h4>No Submissions Found</h4>
+                                <p>You haven't made any submissions yet.</p>
+                                <a href="/submit-research.htm" class="btn btn-primary mt-3">
+                                    <i class="fas fa-plus me-1"></i> Create New Submission
+                                </a>
+                            </div>
+                            
+                            <!-- Timeline -->
+                            <div class="timeline" id="submissionsTimeline">
+                                <!-- Submissions will be loaded here dynamically -->
+                            </div>
+
+                            <!-- Pagination -->
+                            <nav aria-label="Page navigation" id="paginationContainer" style="display: none;">
+                                <ul class="pagination justify-content-center mt-4">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" tabindex="-1" id="prevPage">Previous</a>
+                                    </li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#" id="nextPage">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submission Details Modal -->
+    <div class="modal fade" id="submissionModal" tabindex="-1" aria-labelledby="submissionModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="submissionModalLabel">Submission Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBodyContent">
+                    <!-- Details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    
+    <script>
+        // Current page state
+        let currentState = {
+            filter: 'all',
+            searchQuery: '',
+            currentPage: 1,
+            submissions: []
+        };
+
+        // DOM elements
+        const elements = {
+            timeline: document.getElementById('submissionsTimeline'),
+            loadingIndicator: document.getElementById('loadingIndicator'),
+            emptyState: document.getElementById('emptyState'),
+            pagination: document.getElementById('paginationContainer'),
+           
+            
+            submissionModal: new bootstrap.Modal(document.getElementById('submissionModal')),
+            modalBody: document.getElementById('modalBodyContent'),
+           
+        };
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load submissions
+            fetchSubmissions();
+           
+            
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        // Fetch submissions from server
+        async function fetchSubmissions() {
+            try {
+                showLoading();
+                const response = await fetch('/api/user-submissions', {
+                    credentials: "include"   // <<<<<<<< ADD THIS
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+
+                const data = await response.json();
+
+                console.log("API Response:", data);  // For debugging
+
+                if (data.success && data.submissions) {
+                // Map the submissions to a normalized format
+                currentState.submissions = data.submissions.map(sub => ({
+                    ...sub,
+                    // Flatten important fields for easier access
+                    title: sub.researchDetails?.title || 'Untitled',
+                    conference: sub.researchDetails?.conference || 'Unknown',
+                    venue: sub.researchDetails?.venue || 'Unknown',
+                    date: sub.researchDetails?.date || 'Unknown',
+                    status: sub.metadata?.status || 'pending',
+                    submittedAt: sub.metadata?.submittedAt || new Date().toISOString(),
+                    // Ensure financials exists
+                    financials: sub.financials || {
+                        registrationFee: 0,
+                        travelCharges: 0,
+                        lodgingCharges: 0,
+                        totalAmount: 0
+                    }
+                    }));
+                    renderSubmissions();
+                } else {
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+                showEmptyState();
+            }
+        }
+                
+         
+
+        // Render submissions based on current state
+        function renderSubmissions() {
+            // Filter submissions
+            let filteredSubmissions = currentState.submissions.filter(submission => {
+                // Apply filter
+                if (currentState.filter === 'research' && submission.submissionType !== 'research') return false;
+                if (currentState.filter === 'journal' && submission.submissionType !== 'journal') return false;
+                if (currentState.filter === 'approved' && submission.status !== 'approved') return false;
+                if (currentState.filter === 'pending' && submission.status !== 'pending') return false;
+                if (currentState.filter === 'rejected' && submission.status !== 'rejected') return false;
+                
+               
+                
+                return true;
+            });
+
+            // Update UI based on results
+            if (filteredSubmissions.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            // Clear timeline
+            elements.timeline.innerHTML = '';
+
+            // Add submissions to timeline
+            filteredSubmissions.forEach(submission => {
+                const submissionElement = createSubmissionElement(submission);
+                elements.timeline.appendChild(submissionElement);
+            });
+
+            // Hide loading/empty states
+            hideLoading();
+            elements.emptyState.style.display = 'none';
+            elements.timeline.style.display = 'block';
+        }
+
+        // Create HTML for a single submission
+        function createSubmissionElement(submission) {
+            const submissionDate = new Date(submission.submittedAt);
+            const formattedDate = submissionDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            const statusClass = submission.status === 'approved' ? 'status-approved' : 
+                              submission.status === 'pending' ? 'status-pending' : 'status-rejected';
+            const statusIcon = submission.status === 'approved' ? 'fa-check-circle' : 
+                             submission.status === 'pending' ? 'fa-clock' : 'fa-times-circle';
+            const statusText = submission.status === 'approved' ? 'Approved' : 
+                             submission.status === 'pending' ? 'Pending Review' : 'Rejected';
+            
+            const submissionElement = document.createElement('div');
+            submissionElement.className = `submission-entry ${submission.submissionType} ${submission.status}`;
+            submissionElement.dataset.date = submission.metadata.submittedAt;
+            
+            submissionElement.innerHTML = `
+                <div class="card mb-4 submission-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge ${submission.submissionType}-badge me-2">
+                                        ${submission.submissionType === 'research' ? 'Research Paper' : 'Journal'}
+                                    </span>
+                                    <span class="${statusClass}">
+                                        <i class="fas ${statusIcon} me-1"></i>${statusText}
+                                    </span>
+                                    <span class="text-muted ms-3">
+                                        <i class="far fa-calendar-alt me-1"></i>${formattedDate}
+                                    </span>
+                                </div>
+                                <h5 class="card-title">${submission.title}</h5>
+                                <p class="card-text">
+                                    ${submission.submissionType === 'research' ? 
+                                      `Presented at ${submission.conference}, ${submission.venue}` : 
+                                      `Submitted to ${submission.conference}`}
+                                    <span class="d-block mt-1">
+                                        <strong>Amount:</strong> ₹${submission.financials.totalAmount}
+                                    </span>
+                                </p>
+                                ${submission.status === 'rejected' && submission.rejectionReason ? `
+                                <div class="alert alert-danger mt-2 p-2">
+                                    <small><strong>Reason:</strong> ${submission.rejectionReason}</small>
+                                </div>
+                                ` : ''}
+                            </div>
+                            <div class="col-md-4 d-flex align-items-center justify-content-end">
+                                <div class="btn-group">
+                                    
+                                    <button class="btn btn-outline-secondary" 
+                                            onclick="viewSubmissionDetails('${submission.submittedAt}')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return submissionElement;
+        }
+
+        // View submission details in modal
+        function viewSubmissionDetails(timestamp) {
+            const submission = currentState.submissions.find(s => s.metadata?.submittedAt === timestamp || s.timestamp === timestamp);
+            if (!submission) return;
+            
+            const submissionDate = new Date(submission.metadata?.submittedAt || submission.timestamp);
+            const formattedDate = submissionDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            // Set modal title
+            document.getElementById('submissionModalLabel').textContent = submission.title;
+            
+            // Set modal content
+            elements.modalBody.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Submission Information</h6>
+                        <p><strong>Type:</strong> ${submission.submissionType === 'research' ? 'Research Paper' : 'Journal'}</p>
+                        <p><strong>Status:</strong> <span class="${submission.status === 'approved' ? 'status-approved' : 
+                              submission.status === 'pending' ? 'status-pending' : 'status-rejected'}">
+                            ${submission.status === 'approved' ? 'Approved' : 
+                             submission.status === 'pending' ? 'Pending Review' : 'Rejected'}
+                        </span></p>
+                        <p><strong>Submitted:</strong> ${formattedDate}</p>
+                        ${submission.status === 'rejected' && submission.rejectionReason ? `
+                        <div class="alert alert-danger mt-2 p-2">
+                            <small><strong>Reason:</strong> ${submission.rejectionReason}</small>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Event Details</h6>
+                        <p><strong>${submission.submissionType === 'research' ? 'Conference' : 'Journal'}:</strong> 
+                           ${submission.conference}</p>
+                        ${submission.submissionType === 'research' ? `
+                        <p><strong>Venue:</strong> ${submission.venue}</p>
+                        <p><strong>Date:</strong> ${submission.date}</p>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Financial Details</h6>
+                        <p><strong>Registration Fee:</strong> ₹${submission.financials.registrationFee}</p>
+                        ${submission.submissionType === 'research' ? `
+                        <p><strong>Travelling Charges:</strong> ₹${submission.financials.travelCharges}</p>
+                        <p><strong>Lodging Charges:</strong> ₹${submission.financials.lodgingCharges}</p>
+                        ` : ''}
+                        <p class="fw-bold">Total Amount: ₹${submission.financials.totalAmount}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Bank Details</h6>
+                        <p><strong>Account Holder:</strong> ${submission.bankDetails.name}</p>
+                        <p><strong>Account Number:</strong> ${submission.bankDetails.accountNumber}</p>
+                        <p><strong>IFSC Code:</strong> ${submission.bankDetails.ifsc}</p>
+                    </div>
+                </div>
+            `;
+            
+            
+            // Show modal
+            elements.submissionModal.show();
+        }
+
+        
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Filter options
+            document.querySelectorAll('.filter-option').forEach(option => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active state
+                    document.querySelectorAll('.filter-option').forEach(opt => {
+                        opt.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Update filter and render
+                    currentState.filter = this.dataset.filter;
+                    renderSubmissions();
+                });
+            });
+            
+          
+         
+            
+            // Print button
+            document.getElementById('printBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.print();
+            });
+            
+          
+        }
+
+        // Show loading state
+        function showLoading() {
+            elements.loadingIndicator.style.display = 'block';
+            elements.emptyState.style.display = 'none';
+            elements.timeline.style.display = 'none';
+            elements.pagination.style.display = 'none';
+        }
+
+        // Hide loading state
+        function hideLoading() {
+            elements.loadingIndicator.style.display = 'none';
+        }
+
+        // Show empty state
+        function showEmptyState() {
+            elements.loadingIndicator.style.display = 'none';
+            elements.emptyState.style.display = 'block';
+            elements.timeline.style.display = 'none';
+            elements.pagination.style.display = 'none';
+        }
+    </script>
+
+
+    <script>
+        const sidebar = document.getElementById("sidebar");
+        const menuToggle = document.getElementById("menuToggle");
+
+        menuToggle.addEventListener("click", function () {
+            sidebar.classList.toggle("open");
+        });
+
+        function openSettings() {
+            alert("Settings page will have an option to change profile picture.");
+        }
+
+        if (window.innerWidth > 768) {
+            sidebar.classList.add("open");
+        }
+        
+    </script>
+
+    <!--script for current sidebar-->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let sidebarLinks = document.querySelectorAll(".sidebar-link");
+            let currentPage = window.location.pathname.split("/").pop(); // Get the filename of the current page
+        
+            sidebarLinks.forEach(link => {
+                if (link.getAttribute("href") === currentPage) {
+                    link.classList.add("active"); // Highlight the active link
+                }
+            });
+        });
+        </script>
+ 
+</body>
+</html>
