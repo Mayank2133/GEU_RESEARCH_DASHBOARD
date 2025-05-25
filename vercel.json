@@ -7,8 +7,6 @@
       "config": {
         "includeFiles": [
           "public/**",
-          "uploads/**",
-          "submissions/**",
           "models/**"
         ]
       }
@@ -19,23 +17,12 @@
     {
       "src": "/api/(.*)",
       "dest": "server.js",
-      "methods": ["GET", "POST", "PUT", "DELETE"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*"
-      }
-    },
-   
-    {
-      "src": "/uploads/(.*)",
-      "dest": "server.js"
+      "methods": ["GET", "POST", "PUT", "DELETE"]
     },
     
     {
       "src": "/login",
-      "dest": "/public/login.html",
-      "headers": {
-        "Cache-Control": "public, max-age=3600"
-      }
+      "dest": "/public/login.html"
     },
     {
       "src": "/register",
@@ -52,12 +39,6 @@
       "headers": {
         "Cache-Control": "public, max-age=31536000"
       }
-    },
-    
-    {
-      "src": "/(.*)",
-      "dest": "/public/index.html",
-      "status": 200
     }
   ]
 }
