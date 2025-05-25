@@ -715,6 +715,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 
+// Keep for Render compatibility
+module.exports = app;
+
+
 
 
 
