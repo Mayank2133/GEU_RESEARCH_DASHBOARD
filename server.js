@@ -1,4 +1,5 @@
 require("dotenv").config();
+const express = require('express');
 const session = require('express-session');
 const memorystore = require('memorystore')(session);
 // Add at the top with other requires
