@@ -13,6 +13,10 @@ npm-debug.log*
 Thumbs.db
 
 # JSON database file (optional, if you don't want to push user data)
-users.json
+submissions.json
+
+uploads/
+
+screenshots/
 
 

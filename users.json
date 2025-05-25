@@ -1,0 +1,83 @@
+[
+  {
+    "role": "Staff",
+    "email": "mayank123@gmail.com",
+    "name": "Mayank Srivastava",
+    "designation": "Professor",
+    "phno": "812xxxxxxx",
+    "password": "$2b$10$VzF3eRK05C/IRd6kKY90s.TxUINI/FRLundVMCwxPsE8K2R8mvaZS",
+    "remainingResearchGrant": 20000,
+    "remainingJournalGrant": 30000,
+    "lastGrantYear": 2025,
+    "profilePicture": "uploads/profile-pictures/profile-1746727703681-439483372.png"
+  },
+  {
+    "role": "Staff",
+    "email": "shikar123@gmail.com",
+    "name": "Shikhar Tomar",
+    "designation": "Professor",
+    "phno": "812xxxxxxx",
+    "password": "$2b$10$LD2Mz3ZY9jPq/iIK8yRHuuqJU8n7BrDJPELNYkkXXGBy3WRdgI0Eu",
+    "remainingResearchGrant": 20000,
+    "remainingJournalGrant": 30000,
+    "lastGrantYear": 2025
+  },
+  {
+    "role": "Staff",
+    "email": "mayank1234@gmail.com",
+    "name": "Mayank",
+    "designation": "Professor",
+    "phno": "812xxxxxxx",
+    "password": "$2b$10$.q6MYpQhXkEnIm5JOgDNY.VnQ7Ksh1.Oksq0XD4jZqMRH5.MVgITm",
+    "remainingResearchGrant": 20000,
+    "remainingJournalGrant": 30000,
+    "lastGrantYear": 2025
+  },
+  {
+    "role": "Staff",
+    "email": "m321@gmail.com",
+    "name": "Mayank",
+    "designation": "Professor",
+    "phno": "812xxxxxxx",
+    "password": "$2b$10$1wq70qMKdLpB.F.1q7NqN.ij45vYzU3ayRpuoRKFCa5vC2W47b5.C",
+    "remainingResearchGrant": 20000,
+    "remainingJournalGrant": 30000,
+    "lastGrantYear": 2025
+  },
+  {
+    "role": "Staff",
+    "email": "shikhar321@gmail.com",
+    "name": "Shikhar Tomar",
+    "designation": "Professor",
+    "phno": "812xxxxxxx",
+    "password": "$2b$10$e3fO2CCPR7OAqs7qFrS5ZOeGlcHL0YImsNYEK51fHe3/zMgppTUhK",
+    "remainingResearchGrant": 20000,
+    "remainingJournalGrant": 30000,
+    "lastGrantYear": 2025,
+    "profilePicture": "uploads/profile-pictures/profile-1746770279786-946265043.jpg"
+  },
+  {
+    "role": "Staff",
+    "email": "shikhar28@gmail.com",
+    "name": "Shikhar Tomar",
+    "designation": "Professor",
+    "phno": "812xxxxxxx",
+    "password": "$2b$10$SpSSIpz.6rIwJimTFZE91ejD7jacpZUYTpkyR93MDtGY/DIqmM0u.",
+    "remainingResearchGrant": 20000,
+    "remainingJournalGrant": 30000,
+    "lastGrantYear": 2025,
+    "profilePicture": "uploads/profile-pictures/profile-1747116887157-817845938.jpg"
+  },
+  {
+    "role": "Staff",
+    "email": "arnav123@gmail.com",
+    "name": "Arnav Kotiyal",
+    "designation": "Professor",
+    "phno": "812xxxxxxx",
+    "password": "$2b$10$43S5Y4pthAsrjkfF/4CV/.90GtlM3Tfjfi5PFWoZFalbMG9VCiYB2",
+    "remainingResearchGrant": 20000,
+    "remainingJournalGrant": 30000,
+    "lastGrantYear": 2025,
+    "profilePicture": "uploads/profile-pictures/profile-1747118719573-814467282.jpg"
+  }
+]
