@@ -707,6 +707,9 @@ app.post("/verify-recaptcha", async (req, res) => {
     }
 });
 
+// Keep for Render compatibility
+module.exports = app;
+
 // Modify server startup
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
@@ -715,8 +718,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 
-// Keep for Render compatibility
-module.exports = app;
+
 
 
 
