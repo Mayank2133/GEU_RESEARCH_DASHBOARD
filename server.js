@@ -1,4 +1,5 @@
 require("dotenv").config();
+const session = require('express-session');
 const memorystore = require('memorystore')(session);
 // Add at the top with other requires
 const cors = require('cors');
@@ -26,6 +27,23 @@ app.use(cors({
 
 const userModel = require("./models/userModel"); // ✅ NEW import
 const submissionModel = require("./models/submissionModel");
+
+
+app.use(session({
+  store: new memorystore({
+    checkPeriod: 86400000 // Prune expired entries every 24h
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 86400000 // 24h session
+  }
+}));
+
+
+
 // Add multer for file uploads at the top
 const multer = require('multer');
 // Replace your current multer configuration with this:
@@ -109,18 +127,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
-app.use(session({
-  store: new memorystore({
-    checkPeriod: 86400000 // Prune expired entries every 24h
-  }),
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 86400000 // 24h session
-  }
-}));
 
 // ✅ Register User Route
 app.post("/register", async (req, res) => {
