@@ -693,5 +693,7 @@ app.post("/verify-recaptcha", async (req, res) => {
     }
 });
 
+module.exports = app; // Must be present
+
 // ✅ Start Server
 app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));

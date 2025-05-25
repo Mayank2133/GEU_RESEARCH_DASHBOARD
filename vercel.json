@@ -1,0 +1,62 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "public/**",
+          "uploads/**",
+          "submissions/**",
+          "models/**"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    
+    {
+      "src": "/api/(.*)",
+      "dest": "server.js",
+      "methods": ["GET", "POST", "PUT", "DELETE"]
+    },
+    
+    {
+      "src": "/uploads/(.*)",
+      "dest": "server.js"
+    },
+    
+    {
+      "src": "/login",
+      "dest": "/public/login.html"
+    },
+    {
+      "src": "/register",
+      "dest": "/public/register.htm"
+    },
+    {
+      "src": "/staff-dashboard",
+      "dest": "/public/staff-dashboard.html"
+    },
+    
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000"
+      }
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ]
+}
