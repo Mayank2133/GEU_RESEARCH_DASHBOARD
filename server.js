@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const PDFDocument = require("pdfkit");
 const axios = require("axios");
-const session = require("express-session");
+
 const bcrypt = require("bcrypt");
 
 // 2. Initialize Express FIRST
