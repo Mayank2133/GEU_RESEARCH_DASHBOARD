@@ -10,6 +10,20 @@ const axios = require("axios");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
 
+// 2. Initialize Express FIRST
+const app = express();
+
+// 2. THEN add CORS middleware
+const cors = require('cors');
+app.use(cors({
+  origin: [
+    'http://localhost:4000',
+    'https://your-render-app.onrender.com'
+  ],
+  credentials: true
+}));
+
+
 const userModel = require("./models/userModel"); // ✅ NEW import
 const submissionModel = require("./models/submissionModel");
 // Add multer for file uploads at the top
@@ -70,14 +84,6 @@ const profileUpload = multer({
 });
 
 
-// Configure CORS
-app.use(cors({
-  origin: [
-    'http://localhost:4000', // Local development
-    'https://your-render-app.onrender.com' // Production
-  ],
-  credentials: true
-}));
 
 
 
@@ -90,7 +96,7 @@ if (!fs.existsSync(SUBMISSIONS_FOLDER)) {
     fs.mkdirSync(SUBMISSIONS_FOLDER, { recursive: true });
 }
 
-const app = express();
+
 const PORT = process.env.PORT||4000;
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
