@@ -730,12 +730,9 @@ app.post("/verify-recaptcha", async (req, res) => {
 // Keep for Render compatibility
 module.exports = app;
 
-// Modify server startup
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Local server running on http://localhost:${PORT}`);
-  });
-}
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 
 
