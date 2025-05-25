@@ -19,9 +19,12 @@
     {
       "src": "/api/(.*)",
       "dest": "server.js",
-      "methods": ["GET", "POST", "PUT", "DELETE"]
+      "methods": ["GET", "POST", "PUT", "DELETE"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*"
+      }
     },
-    
+   
     {
       "src": "/uploads/(.*)",
       "dest": "server.js"
@@ -29,7 +32,10 @@
     
     {
       "src": "/login",
-      "dest": "/public/login.html"
+      "dest": "/public/login.html",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
     },
     {
       "src": "/register",
@@ -46,17 +52,12 @@
       "headers": {
         "Cache-Control": "public, max-age=31536000"
       }
-    }
-  ],
-  "headers": [
+    },
+    
     {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
+      "src": "/(.*)",
+      "dest": "/public/index.html",
+      "status": 200
     }
   ]
 }
