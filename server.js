@@ -1,5 +1,7 @@
 require("dotenv").config();
 const express = require("express");
+// Add at the top with other requires
+const cors = require('cors');
 const fs = require("fs");
 const bodyParser = require("body-parser");
 const path = require("path");
@@ -66,6 +68,18 @@ const profileUpload = multer({
         }
     }
 });
+
+
+// Configure CORS
+app.use(cors({
+  origin: [
+    'http://localhost:4000', // Local development
+    'https://your-render-app.onrender.com' // Production
+  ],
+  credentials: true
+}));
+
+
 
 
 const SUBMISSIONS_FOLDER = path.join(__dirname, 'submissions');
@@ -693,7 +707,14 @@ app.post("/verify-recaptcha", async (req, res) => {
     }
 });
 
-module.exports = app; // Must be present
+// Modify server startup
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Local server running on http://localhost:${PORT}`);
+  });
+}
 
-// ✅ Start Server
-app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
+
+
+
+
