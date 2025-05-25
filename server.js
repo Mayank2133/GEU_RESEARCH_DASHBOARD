@@ -14,7 +14,7 @@ const bcrypt = require("bcrypt");
 const app = express();
 
 // 2. THEN add CORS middleware
-const cors = require('cors');
+
 app.use(cors({
   origin: [
     'http://localhost:4000',
