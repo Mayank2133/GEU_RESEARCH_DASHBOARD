@@ -1,5 +1,5 @@
 require("dotenv").config();
-const express = require("express");
+const memorystore = require('memorystore')(session);
 // Add at the top with other requires
 const cors = require('cors');
 const fs = require("fs");
@@ -108,11 +108,18 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
+
 app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
+  store: new memorystore({
+    checkPeriod: 86400000 // Prune expired entries every 24h
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 86400000 // 24h session
+  }
 }));
 
 // ✅ Register User Route
