@@ -1,47 +1,60 @@
-const fs = require("fs");
-const path = require("path");
+const mongoose = require("mongoose");
 
-const submissionsFile = path.join(__dirname, "..", "submissions.json");
+// Define the schema
+const submissionSchema = new mongoose.Schema({
+    user: {
+        name: String,
+        email: String,
+        phno: String
+    },
+    submissionType: { type: String, required: true }, // 'research' or 'journal'
 
-if (!fs.existsSync(submissionsFile)) {
-    fs.writeFileSync(submissionsFile, JSON.stringify([]));
-}
+    title: String,
+    conference: {
+        name: String,
+        date: Date,
+        venue: String,
+        lastDate: Date
+    },
 
-const readSubmissions = () => {
-    try {
-        return JSON.parse(fs.readFileSync(submissionsFile));
-    } catch (error) {
-        console.error("Error reading submissions:", error);
-        return [];
-    }
-};
+    bank: {
+        name: String,
+        accountNumber: String,
+        ifsc: String
+    },
 
-const writeSubmissions = (data) => {
-    try {
-        fs.writeFileSync(submissionsFile, JSON.stringify(data, null, 2));
-    } catch (error) {
-        console.error("Error writing submissions:", error);
-    }
-};
+    charges: {
+        registrationFee: Number,
+        travel: Number,
+        accommodation: Number,
+        food: Number,
+        other: Number
+    },
 
+    coAuthors: [String],
+    receiptUrl: String, // Cloudinary URL for uploaded PDF
+    submissionDate: { type: Date, default: Date.now },
+    status: { type: String, default: "pending" }
+});
+
+// Create the model
+const Submission = mongoose.model("Submission", submissionSchema);
+
+// Exported functions
 module.exports = {
-    saveSubmission: (submission) => {
-        const submissions = readSubmissions();
-        submissions.push(submission);
-        writeSubmissions(submissions);
-        return submission; // Return the saved submission
+    saveSubmission: async (submissionData) => {
+        const submission = new Submission(submissionData);
+        await submission.save();
+        return submission;
     },
 
-    getUserSubmissions: (email) => {
-        const submissions = readSubmissions();
-        return submissions.filter(sub => sub.user?.email === email);
-        
-        
+    getUserSubmissions: async (email) => {
+        return await Submission.find({ "user.email": email });
     },
 
-     // Add this helper function for debugging
-    getAllSubmissions: () => {
-        return readSubmissions();
-    }
+    getAllSubmissions: async () => {
+        return await Submission.find({});
+    },
 
+    getSubmissionModel: () => Submission // Optional: for direct model access
 };

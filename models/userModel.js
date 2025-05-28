@@ -1,54 +1,55 @@
-const fs = require("fs");
-const path = require("path");
+const mongoose = require("mongoose");
 
-const usersFilePath = path.join(__dirname, "..", "users.json");
+// Define the schema
+const userSchema = new mongoose.Schema({
+    role: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    designation: { type: String, required: true },
+    phno: { type: String, required: true },
+    password: { type: String, required: true },
 
-// Ensure users.json exists
-if (!fs.existsSync(usersFilePath)) {
-    fs.writeFileSync(usersFilePath, JSON.stringify([]));
-}
+    remainingResearchGrant: { type: Number, default: 20000 },
+    remainingJournalGrant: { type: Number, default: 30000 },
+    lastGrantYear: { type: Number, default: new Date().getFullYear() },
+    profilePicture: { type: String } // Cloudinary URL
+});
 
-// Internal read/write
-const readUsers = () => JSON.parse(fs.readFileSync(usersFilePath));
-const writeUsers = (users) => fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+// Create a model from the schema
+const User = mongoose.model("User", userSchema);
 
 // Exported functions
 module.exports = {
-    getAllUsers: () => readUsers(),
-
-    getUserByEmail: (email) => {
-        const users = readUsers();
-        return users.find(user => user.email === email);
+    getAllUsers: async () => {
+        return await User.find({});
     },
 
-    userExists: (email) => {
-        const users = readUsers()
-        return users.some(user => user.email === email);
+    getUserByEmail: async (email) => {
+        return await User.findOne({ email });
     },
 
-    updateUser: (email, newData) => {
-        const users = this.getAllUsers();
-        const index = users.findIndex(u => u.email === email);
-        
-        if (index !== -1) {
-            users[index] = { ...users[index], ...newData };
-            fs.writeFileSync(
-                path.join(__dirname, 'users.json'),
-                JSON.stringify(users, null, 2)
-            );
-            return true;
-        }
-        return false;
+    userExists: async (email) => {
+        const user = await User.findOne({ email });
+        return !!user;
     },
 
-    createUser: (newUser) => {
+    updateUser: async (email, newData) => {
+        const user = await User.findOneAndUpdate({ email }, newData, { new: true });
+        return !!user;
+    },
 
-        
-        const users = readUsers();
-        newUser.remainingResearchGrant = 20000; // default limit
-        newUser.remainingJournalGrant = 30000;
-        newUser.lastGrantYear = new Date().getFullYear();
-        users.push(newUser);
-        writeUsers(users);
-    }
+    createUser: async (newUser) => {
+        const user = new User({
+            ...newUser,
+            remainingResearchGrant: 20000,
+            remainingJournalGrant: 30000,
+            lastGrantYear: new Date().getFullYear()
+        });
+        await user.save();
+    },
+
+    getUserModel: () => User // Optional: for direct model access
 };
+
+
+

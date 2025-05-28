@@ -1,4 +1,18 @@
 require("dotenv").config();
+const cloudinary = require('cloudinary').v2;
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
+
+
 const express = require('express');
 const session = require('express-session');
 const memorystore = require('memorystore')(session);
@@ -43,6 +57,7 @@ app.use(session({
   }
 }));
 
+m
 
 
 // Add multer for file uploads at the top
@@ -129,34 +144,63 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 
-// ✅ Register User Route
+// Register User Route
 app.post("/register", async (req, res) => {
     const { role, email, name, designation, phno, password } = req.body;
 
-    if (userModel.userExists(email)) {
-        return res.status(400).json({ message: "User already exists!" });
+    try {
+        const exists = await userModel.userExists(email);
+        if (exists) {
+            return res.status(400).json({ message: "User already exists!" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await userModel.createUser({
+            role,
+            email,
+            name,
+            designation,
+            phno,
+            password: hashedPassword
+        });
+
+        res.status(201).json({ message: "User registered successfully!" });
+    } catch (err) {
+        console.error("Registration error:", err);
+        res.status(500).json({ message: "Server error during registration." });
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    userModel.createUser({ role, email, name, designation, phno, password: hashedPassword });
-    res.status(201).json({ message: "User registered successfully!" });
 });
 
 // ✅ Login User Route
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
-    const user = userModel.getUserByEmail(email);
-    if (user) {
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (isMatch) {
-            req.session.user = { email: user.email, role: user.role, name: user.name, designation: user.designation, phno: user.phno, remainingResearchGrant: user.remainingResearchGrant, remainingJournalGrant: user.remainingJournalGrant};
-            return res.json({ success: true, message: "Login successful!",role: user.role });
-        }
-    }
+    try {
+        const user = await userModel.getUserByEmail(email);
 
-    res.status(401).json({ success: false, message: "Invalid credentials!" });
+        if (user) {
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (isMatch) {
+                req.session.user = {
+                    email: user.email,
+                    role: user.role,
+                    name: user.name,
+                    designation: user.designation,
+                    phno: user.phno,
+                    remainingResearchGrant: user.remainingResearchGrant,
+                    remainingJournalGrant: user.remainingJournalGrant
+                };
+
+                return res.json({ success: true, message: "Login successful!", role: user.role });
+            }
+        }
+
+        res.status(401).json({ success: false, message: "Invalid credentials!" });
+    } catch (err) {
+        console.error("Login error:", err);
+        res.status(500).json({ message: "Server error during login." });
+    }
 });
 
 //captcha key serve
@@ -176,31 +220,36 @@ app.post("/logout", (req, res) => {
     });
 });
 
-// ✅ Get user session info
-app.get("/api/user", (req, res) => {
+app.get("/api/user", async (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    const allUsers = userModel.getAllUsers();
-    const user = allUsers.find(u => u.email === req.session.user.email);
+    try {
+        const user = await userModel.getUserByEmail(req.session.user.email);
 
-    if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
-    }
-
-      
-    const profileUrl = user.profilePicture 
-        ? `/uploads/profile-pictures/${path.basename(user.profilePicture)}`
-        : null;
-
-    return res.json({
-        success: true,
-        user: {
-            ...user,
-            profileUrl
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
         }
-    });
+
+        return res.json({
+            success: true,
+            user: {
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                designation: user.designation,
+                phno: user.phno,
+                remainingResearchGrant: user.remainingResearchGrant,
+                remainingJournalGrant: user.remainingJournalGrant,
+                lastGrantYear: user.lastGrantYear,
+                profileUrl: user.profilePicture || null
+            }
+        });
+    } catch (err) {
+        console.error("Session fetch error:", err);
+        res.status(500).json({ success: false, message: "Server error retrieving user." });
+    }
 });
 
 
@@ -217,50 +266,34 @@ app.get('/staff-dashboard', (req, res) => {
 });
 
 // Add profile picture upload endpoint (with other API routes)
-app.post('/api/upload-profile-picture', profileUpload.single('profilePicture'), (req, res) => {
-    try {
-        if (!req.session.user) {
+// multer config for profileUpload (as before, storing to /uploads/profile-pictures)
+app.post('/api/upload-profile', profileUpload.single('profilePic'), async (req, res) => {
+  try {
+    if (!req.session.user) {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
 
-        if (!req.file) {
+    if (!req.file) {
             return res.status(400).json({ success: false, message: "No file uploaded" });
-        }
-
-        const email = req.session.user.email;
-        const users = userModel.getAllUsers();
-        const userIndex = users.findIndex(u => u.email === email);
-
-        if (userIndex === -1) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        // Delete old profile picture
-        const oldPicPath = path.join(__dirname, users[userIndex].profilePicture || '');
-        if (users[userIndex].profilePicture && fs.existsSync(oldPicPath)) {
-            fs.unlinkSync(oldPicPath);
-        }
-
-        // Save relative path in users.json
-        const relativePath = path.join('uploads', 'profile-pictures', req.file.filename).replace(/\\/g, '/');
-        users[userIndex].profilePicture = relativePath;
-
-        fs.writeFileSync(path.join(__dirname, 'users.json'), JSON.stringify(users, null, 2));
-
-        // In the /api/upload-profile-picture endpoint, modify the response:
-        res.json({
-            success: true,
-            message: "Profile picture updated successfully",
-            profileUrl: `/uploads/profile-pictures/${req.file.filename}` // Use direct path
-        });
-
-    } catch (error) {
-        console.error("Profile upload error:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: "Internal server error while uploading profile picture" 
-        });
     }
+    const filePath = req.file.path;
+    // Upload to Cloudinary (folder "geu-profiles")
+    const result = await cloudinary.uploader.upload(filePath, {
+      folder: 'geu-profiles',
+      resource_type: 'image'  // default for images
+    });
+    // Remove local file
+    fs.unlinkSync(filePath);
+    // Save URL to user profile in DB
+    const updated = await User.findOneAndUpdate(
+      { email: req.session.user.email },
+      { profilePicUrl: result.secure_url },
+      { new: true }
+    );
+    res.json({ success: true, url: result.secure_url });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Upload failed" });
+  }
 });
 
 
