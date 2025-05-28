@@ -34,7 +34,7 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:4000',
-    'https://geu-research-dashboard.onrender.com'
+    'https://geu-research-dashboard-deloyable.onrender.com'
   ],
   credentials: true
 }));
