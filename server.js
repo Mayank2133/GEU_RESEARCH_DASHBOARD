@@ -185,36 +185,43 @@ app.post("/register", async (req, res) => {
     }
 });
 
-// ✅ Login User Route
+//  Login User Route
 app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+  const { email, password } = req.body;
 
-    try {
-        const user = await userModel.getUserByEmail(email);
+  try {
+    const user = await userModel.getUserByEmail(email);
 
-        if (user) {
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (isMatch) {
-                req.session.user = {
-                    email: user.email,
-                    role: user.role,
-                    name: user.name,
-                    designation: user.designation,
-                    phno: user.phno,
-                    remainingResearchGrant: user.remainingResearchGrant,
-                    remainingJournalGrant: user.remainingJournalGrant
-                };
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        req.session.user = {
+          email: user.email,
+          role: user.role,
+          name: user.name,
+          designation: user.designation,
+          phno: user.phno,
+          remainingResearchGrant: user.remainingResearchGrant,
+          remainingJournalGrant: user.remainingJournalGrant,
+        };
 
-                return res.json({ success: true, message: "Login successful!", role: user.role });
-            }
-        }
+       
 
-        res.status(401).json({ success: false, message: "Invalid credentials!" });
-    } catch (err) {
-        console.error("Login error:", err);
-        res.status(500).json({ message: "Server error during login." });
+        return res.json({
+          success: true,
+          message: "Login successful!",
+          role: user.role,
+        });
+      }
     }
+
+    res.status(401).json({ success: false, message: "Invalid credentials!" });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error during login." });
+  }
 });
+
 
 //captcha key serve
 app.get('/config', (req, res) => {
