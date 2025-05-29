@@ -157,22 +157,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Serve frontend pages cleanly from /public
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html"));
-});
-
-app.get("/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "register.html"));
-});
-
-app.get("/staff-dashboard", (req, res) => {
-  if (req.session.user) {
-    res.sendFile(path.join(__dirname, "public", "staff-dashboard.html"));
-  } else {
-    res.redirect("/login");
-  }
-});
 
 
 
@@ -204,7 +188,6 @@ app.post("/register", async (req, res) => {
     }
 });
 
-//  Login User Route
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -223,31 +206,27 @@ app.post("/login", async (req, res) => {
           remainingResearchGrant: user.remainingResearchGrant,
           remainingJournalGrant: user.remainingJournalGrant,
         };
+
+        // Save session explicitly before sending response
         req.session.save(err => {
-            if (err) {
+          if (err) {
             console.error("Session save error:", err);
             return res.status(500).json({ message: "Session save failed" });
-            }
-            return res.json({ 
+          }
+          
+          console.log("✅ Session saved after login");
+          return res.json({
             success: true,
             message: "Login successful!",
-            role: user.role 
-            });
+            role: user.role,
+          });
         });
-
-        console.log("✅ Session created after login:", req.session); // debug log
-
-       
-
-        return res.json({
-          success: true,
-          message: "Login successful!",
-          role: user.role,
-        });
+      } else {
+        res.status(401).json({ success: false, message: "Invalid credentials!" });
       }
+    } else {
+      res.status(401).json({ success: false, message: "Invalid credentials!" });
     }
-
-    res.status(401).json({ success: false, message: "Invalid credentials!" });
   } catch (err) {
     console.error("Login error:", err);
     res.status(500).json({ message: "Server error during login." });
