@@ -575,39 +575,41 @@
 
     // Save profile picture upload
     saveProfileBtn.addEventListener('click', async function () {
-      const file = profilePictureInput.files[0];
-      if (!file) {
+    const file = profilePictureInput.files[0];
+    if (!file) {
         alert('Please select a picture first');
         return;
-      }
+    }
 
-      const formData = new FormData();
-      formData.append('profilePicture', file);
+    const formData = new FormData();
+    formData.append('profilePic', file); // Correct field name
 
-      try {
+    try {
         const response = await fetch(`${API_BASE}/api/upload-profile`, {
-          method: 'POST',
-          body: formData,
-          credentials: 'include'
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
         });
 
         const data = await response.json();
         if (response.ok) {
-          mainProfileImg.src = data.profileUrl + '?t=' + Date.now(); // Cache bust
-          mainProfileImg.style.display = 'block';
-          defaultIcon.style.display = 'none';
-
-          bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
-          alert('Profile picture updated successfully!');
-        } else {
-          alert('Error: ' + (data.message || 'Failed to update profile picture'));
+        // Use profileUrl from response
+        if (data.profileUrl) {
+            mainProfileImg.src = data.profileUrl + '?t=' + Date.now();
+            mainProfileImg.style.display = 'block';
+            defaultIcon.style.display = 'none';
         }
-      } catch (error) {
-        console.error('Error:', error);
+        
+        bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+        alert('Profile picture updated successfully!');
+        } else {
+        alert('Error: ' + (data.message || 'Failed to update profile picture'));
+        }
+    } catch (error) {
+        console.error('Upload error:', error);
         alert('An error occurred while uploading the picture');
-      }
+    }
     });
-
     // Logout
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {

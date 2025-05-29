@@ -307,28 +307,34 @@ app.get('/staff-dashboard', (req, res) => {
 app.post('/api/upload-profile', profileUpload.single('profilePic'), async (req, res) => {
   try {
     if (!req.session.user) {
-            return res.status(401).json({ success: false, message: "Unauthorized" });
-        }
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
 
     if (!req.file) {
-            return res.status(400).json({ success: false, message: "No file uploaded" });
+      return res.status(400).json({ success: false, message: "No file uploaded" });
     }
+    
     const filePath = req.file.path;
-    // Upload to Cloudinary (folder "geu-profiles")
     const result = await cloudinary.uploader.upload(filePath, {
       folder: 'geu-profiles',
-      resource_type: 'image'  // default for images
+      resource_type: 'image'
     });
-    // Remove local file
+    
     fs.unlinkSync(filePath);
-    // Save URL to user profile in DB
-    const updated = await UserModel.findOneAndUpdate(
+    
+    // Use userModel, not UserModel
+    const updated = await userModel.findOneAndUpdate(
       { email: req.session.user.email },
-      { profilePicUrl: result.secure_url },
+      { profilePicture: result.secure_url }, // Consistent field name
       { new: true }
     );
-    res.json({ success: true, url: result.secure_url });
+    
+    res.json({ 
+      success: true, 
+      profileUrl: result.secure_url // Return profileUrl
+    });
   } catch (err) {
+    console.error("Profile upload error:", err);
     res.status(500).json({ success: false, message: "Upload failed" });
   }
 });
