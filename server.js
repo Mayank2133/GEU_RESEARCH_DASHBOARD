@@ -205,6 +205,8 @@ app.post("/login", async (req, res) => {
           remainingJournalGrant: user.remainingJournalGrant,
         };
 
+        console.log("✅ Session created after login:", req.session); // debug log
+
        
 
         return res.json({
@@ -241,36 +243,42 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/api/user", async (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ success: false, message: "Unauthorized" });
+  console.log("🔍 Checking session on /api/user:", req.session);
+
+  // If session or user is missing, return unauthorized
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    const email = req.session.user.email;
+
+    const user = await userModel.getUserByEmail(email);
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    try {
-        const user = await userModel.getUserByEmail(req.session.user.email);
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        return res.json({
-            success: true,
-            user: {
-                name: user.name,
-                email: user.email,
-                role: user.role,
-                designation: user.designation,
-                phno: user.phno,
-                remainingResearchGrant: user.remainingResearchGrant,
-                remainingJournalGrant: user.remainingJournalGrant,
-                lastGrantYear: user.lastGrantYear,
-                profileUrl: user.profilePicture || null
-            }
-        });
-    } catch (err) {
-        console.error("Session fetch error:", err);
-        res.status(500).json({ success: false, message: "Server error retrieving user." });
-    }
+    return res.json({
+      success: true,
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        designation: user.designation,
+        phno: user.phno,
+        remainingResearchGrant: user.remainingResearchGrant,
+        remainingJournalGrant: user.remainingJournalGrant,
+        lastGrantYear: user.lastGrantYear,
+        profileUrl: user.profilePicture || null
+      }
+    });
+  } catch (err) {
+    console.error("Session fetch error:", err);
+    res.status(500).json({ success: false, message: "Server error retrieving user." });
+  }
 });
+
 
 
 
