@@ -61,10 +61,10 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',         // ✅ required for SameSite: 'none'
-        sameSite: 'lax',     // ✅ allows cross-origin session cookies
+        secure: true,         // ✅ required for SameSite: 'none'
+        sameSite: 'none',     // ✅ allows cross-origin session cookies
         maxAge: 86400000,
-        domain: 'geu-research-dashboard-deloyable.onrender'
+        
   }
 }));
 
