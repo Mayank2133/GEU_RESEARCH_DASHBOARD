@@ -15,7 +15,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 const express = require('express');
 const session = require('express-session');
-const memorystore = require('memorystore')(session);
+const MongoStore = require('connect-mongo');
+
 // Add at the top with other requires
 const cors = require('cors');
 const fs = require("fs");
@@ -45,19 +46,21 @@ const submissionModel = require("./models/submissionModel");
 
 
 app.use(session({
-  store: new MemoryStore({
-    checkPeriod: 86400000 // Prune expired entries every 24h
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    ttl: 24 * 60 * 60 // 1 day in seconds
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    httpOnly: true, // prevents client-side JS from accessing the cookie
-    secure: process.env.NODE_ENV === 'production', // only send cookie over HTTPS in production
-    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'strict', // cross-origin handling
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'strict',
     maxAge: 86400000 // 24 hours
   }
 }));
+
 
 
 
