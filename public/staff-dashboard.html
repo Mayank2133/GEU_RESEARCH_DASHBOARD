@@ -488,174 +488,149 @@
 
                 
 </div>
-
 <script>
-    const sidebar = document.getElementById("sidebar");
-    const menuToggle = document.getElementById("menuToggle");
-    
-    const API_BASE = window.location.hostname === "localhost"
-       ? "http://localhost:4000"
-       : "https://geu-research-dashboard-deloyable.onrender.com";
+  const sidebar = document.getElementById("sidebar");
+  const menuToggle = document.getElementById("menuToggle");
 
-    menuToggle.addEventListener("click", function () {
-        sidebar.classList.toggle("open");
-    });
+  const API_BASE = window.location.hostname === "localhost"
+    ? "http://localhost:4000"
+    : "https://geu-research-dashboard-deloyable.onrender.com";
 
-    if (window.innerWidth > 768) {
-        sidebar.classList.add("open");
+  menuToggle.addEventListener("click", function () {
+    sidebar.classList.toggle("open");
+  });
+
+  if (window.innerWidth > 768) {
+    sidebar.classList.add("open");
+  }
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    const mainProfileImg = document.getElementById('mainProfileImage');
+    const defaultIcon = document.getElementById('defaultProfileIcon');
+    const profilePictureInput = document.getElementById('profilePicture');
+    const profilePreview = document.getElementById('profilePreview');
+    const saveProfileBtn = document.getElementById('saveProfilePicture');
+
+    // Safety check
+    if (!profilePictureInput || !saveProfileBtn) {
+      console.warn('Required profile DOM elements not found.');
+      return;
     }
 
-    // Profile Picture Upload Handling
-    document.addEventListener("DOMContentLoaded", function() {
-        const profilePictureInput = document.getElementById('profilePicture');
-        const profilePreview = document.getElementById('profilePreview');
-        const defaultProfileIcon = document.getElementById('defaultProfileIcon');
-        const saveProfileBtn = document.getElementById('saveProfilePicture');
-        const mainProfileImg = document.querySelector('.profile-img-container .profile-img');
+    try {
+      const response = await fetch(`${API_BASE}/api/user`, {
+        credentials: 'include'
+      });
 
-        // Preview image when selected
-        profilePictureInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.size > 2 * 1024 * 1024) {
-                    alert('File size exceeds 2MB limit');
-                    return;
-                }
+      const data = await response.json();
 
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    profilePreview.src = event.target.result;
-                    profilePreview.style.display = 'block';
-                    defaultProfileIcon.style.display = 'none';
-                }
-                reader.readAsDataURL(file);
-            }
+      if (!response.ok || !data.user) {
+        alert("You are not logged in!");
+        return window.location.href = "login.html";
+      }
+
+      const user = data.user;
+
+      // Populate user info
+      document.getElementById("headuserName").textContent = user.name;
+      document.getElementById("userName").textContent = user.name;
+      document.getElementById("userEmail").textContent = user.email;
+      document.getElementById("userRole").textContent = user.role;
+      document.getElementById("userdesignation").textContent = user.designation;
+      document.getElementById("userphno").textContent = user.phno;
+
+      // Set profile picture
+      if (user.profileUrl) {
+        mainProfileImg.src = user.profileUrl;
+        mainProfileImg.style.display = 'block';
+        defaultIcon.style.display = 'none';
+      } else {
+        mainProfileImg.style.display = 'none';
+        defaultIcon.style.display = 'block';
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      alert("Session expired or server error.");
+      window.location.href = "login.html";
+    }
+
+    // Preview image when selected
+    profilePictureInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        if (file.size > 2 * 1024 * 1024) {
+          alert('File size exceeds 2MB limit');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          profilePreview.src = event.target.result;
+          profilePreview.style.display = 'block';
+          defaultIcon.style.display = 'none';
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Save profile picture upload
+    saveProfileBtn.addEventListener('click', async function () {
+      const file = profilePictureInput.files[0];
+      if (!file) {
+        alert('Please select a picture first');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('profilePicture', file);
+
+      try {
+        const response = await fetch(`${API_BASE}/api/upload-profile-picture`, {
+          method: 'POST',
+          body: formData,
+          credentials: 'include'
         });
 
-        
+        const data = await response.json();
+        if (response.ok) {
+          mainProfileImg.src = data.profileUrl + '?t=' + Date.now(); // Cache bust
+          mainProfileImg.style.display = 'block';
+          defaultIcon.style.display = 'none';
 
-        // Replace the existing fetch code with this:
-        fetch(`${API_BASE}/api/user`, { credentials: 'include' })
-            .then(res => res.json())
-            .then(data => {
-                const mainProfileImg = document.getElementById('mainProfileImage');
-                const defaultIcon = document.getElementById('defaultProfileIcon');
-                
-                if (data.user?.profileUrl) {
-                    mainProfileImg.src = data.user.profileUrl;
-                    mainProfileImg.style.display = 'block';
-                    defaultIcon.style.display = 'none';
-                } else {
-                    mainProfileImg.style.display = 'none';
-                    defaultIcon.style.display = 'block';
-                }
-            });
+          bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+          alert('Profile picture updated successfully!');
+        } else {
+          alert('Error: ' + (data.message || 'Failed to update profile picture'));
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred while uploading the picture');
+      }
+    });
 
-       
+    // Logout
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async function () {
+        try {
+          const res = await fetch(`${API_BASE}/logout`, {
+            method: "POST",
+            credentials: "include"
+          });
 
-
-        // Replace the saveProfileBtn event listener with this:
-        saveProfileBtn.addEventListener('click', async function() {
-            const file = profilePictureInput.files[0];
-            if (!file) {
-                alert('Please select a picture first');
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('profilePicture', file);
-
-            try {
-                const response = await fetch(`${API_BASE}/api/upload-profile-picture`, {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'include'
-                });
-
-                const data = await response.json();
-                if (response.ok) {
-                    // Update main profile image
-                    const mainProfileImg = document.getElementById('mainProfileImage');
-                    const defaultIcon = document.getElementById('defaultProfileIcon');
-                    
-                    mainProfileImg.src = data.profileUrl + '?t=' + Date.now(); // Cache bust
-                    mainProfileImg.style.display = 'block';
-                    defaultIcon.style.display = 'none';
-                    
-                    // Close the modal
-                    bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
-                    alert('Profile picture updated successfully!');
-                } else {
-                    alert('Error: ' + (data.message || 'Failed to update profile picture'));
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while uploading the picture');
-            }
-        });
-    });    
-        
-        
-        
-</script>
-    <script>
-        document.addEventListener("DOMContentLoaded", async function () {
-          try {
-            const response = await fetch(`${API_BASE}/api/user`,{
-                credentials:'include'
-            });
-            const data = await response.json();
-      
-            if (response.ok) {
-              const user = data.user;
-              document.getElementById("headuserName").textContent = user.name;
-              document.getElementById("userName").textContent = user.name;
-              document.getElementById("userEmail").textContent = user.email;
-              document.getElementById("userRole").textContent = user.role;
-              document.getElementById("userdesignation").textContent = user.designation;
-              document.getElementById("userphno").textContent = user.phno;
- 
-                       
-
-                
-            } else {
-              alert("You are not logged in!");
-              window.location.href = "login.html";
-            }
-          } catch (error) {
-            console.error("Error fetching user data:", error);
-            alert("Session expired or server error.");
+          const data = await res.json();
+          if (data.success) {
             window.location.href = "login.html";
+          } else {
+            alert("Logout failed");
           }
-        });
-      </script>
-      
-    <!--Logout Script-->
-    <script>
-        
-        // Logout Script
-        document.getElementById("logoutBtn").addEventListener("click", async function () {
-            try {
-                const res = await fetch(`${API_BASE}/logout`, {
-                    method: "POST",
-                    credentials: "include"
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    window.location.href = "login.html";
-                } else {
-                    alert("Logout failed");
-                }
-            } catch (err) {
-                console.error("Logout error:", err);
-                alert("Logout failed.");
-            }
-        });
-    </script>
-    
-    
-    
-
+        } catch (err) {
+          console.error("Logout error:", err);
+          alert("Logout failed.");
+        }
+      });
+    }
+  });
+</script>
 </body>
 </html>
