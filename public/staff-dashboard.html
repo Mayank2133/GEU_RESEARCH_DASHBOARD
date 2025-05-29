@@ -492,6 +492,10 @@
 <script>
     const sidebar = document.getElementById("sidebar");
     const menuToggle = document.getElementById("menuToggle");
+    
+    const API_BASE = window.location.hostname === "localhost"
+       ? "http://localhost:4000"
+       : "https://geu-research-dashboard-deloyable.onrender.com";
 
     menuToggle.addEventListener("click", function () {
         sidebar.classList.toggle("open");
@@ -528,8 +532,10 @@
             }
         });
 
+        
+
         // Replace the existing fetch code with this:
-        fetch("/api/user", { credentials: 'include' })
+        fetch(`${API_BASE}/api/user`, { credentials: 'include' })
             .then(res => res.json())
             .then(data => {
                 const mainProfileImg = document.getElementById('mainProfileImage');
@@ -560,7 +566,7 @@
             formData.append('profilePicture', file);
 
             try {
-                const response = await fetch('/api/upload-profile-picture', {
+                const response = await fetch(`${API_BASE}/api/upload-profile-picture`, {
                     method: 'POST',
                     body: formData,
                     credentials: 'include'
@@ -595,7 +601,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", async function () {
           try {
-            const response = await fetch("/api/user",{
+            const response = await fetch(`${API_BASE}/api/user`,{
                 credentials:'include'
             });
             const data = await response.json();
@@ -626,10 +632,7 @@
       
     <!--Logout Script-->
     <script>
-        // Define API_BASE
-        const API_BASE = window.location.hostname === "localhost"
-            ? "http://localhost:4000"
-            : "https://geu-research-dashboard-deloyable.onrender.com";
+        
         // Logout Script
         document.getElementById("logoutBtn").addEventListener("click", async function () {
             try {
