@@ -322,7 +322,7 @@ app.post('/api/upload-profile', profileUpload.single('profilePic'), async (req, 
     // Remove local file
     fs.unlinkSync(filePath);
     // Save URL to user profile in DB
-    const updated = await User.findOneAndUpdate(
+    const updated = await UserModel.findOneAndUpdate(
       { email: req.session.user.email },
       { profilePicUrl: result.secure_url },
       { new: true }

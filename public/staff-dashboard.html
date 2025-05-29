@@ -585,7 +585,7 @@
       formData.append('profilePicture', file);
 
       try {
-        const response = await fetch(`${API_BASE}/api/upload-profile-picture`, {
+        const response = await fetch(`${API_BASE}/api/upload-profile`, {
           method: 'POST',
           body: formData,
           credentials: 'include'
