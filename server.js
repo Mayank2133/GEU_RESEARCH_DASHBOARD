@@ -49,6 +49,7 @@ const submissionModel = require("./models/submissionModel");
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.set('trust proxy', 1);
 
 app.use(session({
   store: MongoStore.create({
@@ -60,7 +61,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
         httpOnly: true,
-        secure: true,         // ✅ required for SameSite: 'none'
+        secure: process.env.NODE_ENV === 'production',         // ✅ required for SameSite: 'none'
         sameSite: 'lax',     // ✅ allows cross-origin session cookies
         maxAge: 86400000,
         domain: 'geu-research-dashboard-deloyable.onrender'
