@@ -40,20 +40,22 @@ app.use(cors({
 }));
 
 
-const userModel = require("./models/userModel"); // ✅ NEW import
+const userModel = require("./models/userModel"); //  NEW import
 const submissionModel = require("./models/submissionModel");
 
 
 app.use(session({
-  store: new memorystore({
+  store: new MemoryStore({
     checkPeriod: 86400000 // Prune expired entries every 24h
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 86400000 // 24h session
+    httpOnly: true, // prevents client-side JS from accessing the cookie
+    secure: process.env.NODE_ENV === 'production', // only send cookie over HTTPS in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : 'strict', // cross-origin handling
+    maxAge: 86400000 // 24 hours
   }
 }));
 
