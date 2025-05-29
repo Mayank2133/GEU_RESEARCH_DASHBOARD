@@ -48,6 +48,11 @@ module.exports = {
         await user.save();
     },
 
+    
+    findOneAndUpdate: async (filter, update, options) => {
+        return await User.findOneAndUpdate(filter, update, options);
+    },
+
     getUserModel: () => User // Optional: for direct model access
 };
 

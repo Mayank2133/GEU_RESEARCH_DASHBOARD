@@ -322,24 +322,26 @@ app.post('/api/upload-profile', profileUpload.single('profilePic'), async (req, 
     
     fs.unlinkSync(filePath);
     
-    // Use userModel, not UserModel
+    // Use the new findOneAndUpdate method
     const updated = await userModel.findOneAndUpdate(
       { email: req.session.user.email },
-      { profilePicture: result.secure_url }, // Consistent field name
+      { profilePicture: result.secure_url },
       { new: true }
     );
     
+    if (!updated) {
+      return res.status(500).json({ success: false, message: "Failed to update user profile" });
+    }
+    
     res.json({ 
       success: true, 
-      profileUrl: result.secure_url // Return profileUrl
+      profileUrl: result.secure_url
     });
   } catch (err) {
     console.error("Profile upload error:", err);
     res.status(500).json({ success: false, message: "Upload failed" });
   }
 });
-
-
 // Add profile picture serving route (with other static routes)
 app.get('/uploads/profile-pictures/:filename', (req, res) => {
     const filePath = path.join(__dirname, 'uploads/profile-pictures', req.params.filename);
