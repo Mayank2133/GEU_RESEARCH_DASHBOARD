@@ -1,60 +1,47 @@
 const mongoose = require("mongoose");
 
-// Define the schema
 const submissionSchema = new mongoose.Schema({
     user: {
-        name: String,
-        email: String,
-        phno: String
+        name: { type: String, required: true },
+        email: { type: String, required: true },
+        phone: { type: String, required: true }
     },
-    submissionType: { type: String, required: true }, // 'research' or 'journal'
-
-    title: String,
+    submissionType: { type: String, required: true, enum: ["research", "journal"] },
+    title: { type: String, required: true },
     conference: {
-        name: String,
-        date: Date,
-        venue: String,
-        lastDate: Date
+        name: { type: String, required: true },
+        date: { type: Date, required: true },
+        venue: { type: String, required: true },
+        lastDate: { type: Date, required: true }
     },
-
-    bank: {
-        name: String,
-        accountNumber: String,
-        ifsc: String
+    bankDetails: {
+        name: { type: String, required: true },
+        accountNumber: { type: String, required: true },
+        ifsc: { type: String, required: true }
     },
-
     charges: {
-        registrationFee: Number,
-        travel: Number,
-        accommodation: Number,
-        food: Number,
-        other: Number
+        registrationFee: { type: Number, required: true },
+        travelCharges: { type: Number, required: true },
+        lodgingCharges: { type: Number, required: true },
+        totalAmount: { type: Number, required: true }
     },
+    coAuthorCount: { type: Number, default: 0 },
+    receiptUrl: { type: String, required: true }, // Cloudinary URL
+    declaration: { type: Boolean, required: true },
+    grantType: { type: String, required: true, enum: ["research", "journal"] },
+    remainingBalanceAfter: { type: Number, required: true },
+    status: { type: String, default: "pending" },
+    submissionDate: { type: Date, default: Date.now }
+}, { timestamps: true });
 
-    coAuthors: [String],
-    receiptUrl: String, // Cloudinary URL for uploaded PDF
-    submissionDate: { type: Date, default: Date.now },
-    status: { type: String, default: "pending" }
-});
-
-// Create the model
 const Submission = mongoose.model("Submission", submissionSchema);
 
-// Exported functions
 module.exports = {
-    saveSubmission: async (submissionData) => {
+    createSubmission: async (submissionData) => {
         const submission = new Submission(submissionData);
-        await submission.save();
-        return submission;
+        return await submission.save();
     },
-
     getUserSubmissions: async (email) => {
-        return await Submission.find({ "user.email": email });
-    },
-
-    getAllSubmissions: async () => {
-        return await Submission.find({});
-    },
-
-    getSubmissionModel: () => Submission // Optional: for direct model access
+        return await Submission.find({ "user.email": email }).sort({ createdAt: -1 });
+    }
 };

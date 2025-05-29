@@ -354,51 +354,53 @@ app.get('/uploads/profile-pictures/:filename', (req, res) => {
 });
 
 
-// Helper function for grant logic
-const handleGrantRequest = (email, grantType, defaultAmount) => {
-    const user = userModel.getUserByEmail(email);
-    if (!user) {
-        return { success: false, message: "User not found" };
-    }
-
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const grantField = `remaining${grantType}Grant`;
-
-    // Reset grant if new year
-    if (user.lastGrantYear !== currentYear) {
-        user[grantField] = defaultAmount;
-        user.lastGrantYear = currentYear;
-
-        // Update user data
-        const users = userModel.getAllUsers();
-        const index = users.findIndex(u => u.email === email);
-        if (index !== -1) {
-            users[index] = user;
-            try {
-                fs.writeFileSync(
-                    path.join(__dirname, "..", "users.json"), 
-                    JSON.stringify(users, null, 2)
-                );
-            } catch (error) {
-                console.error("Error saving user data:", error);
-                return { 
-                    success: false, 
-                    message: "Error updating user record" 
-                };
-            }
+const handleGrantRequest = async (email, grantType, defaultAmount) => {
+    try {
+        const user = await userModel.getUserByEmail(email);
+        if (!user) {
+            return { success: false, message: "User not found" };
         }
+
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const grantField = `remaining${grantType}Grant`;
+
+        // Reset grant if new year
+        if (user.lastGrantYear !== currentYear) {
+            const update = {
+                [grantField]: defaultAmount,
+                lastGrantYear: currentYear
+            };
+
+            // Update user in MongoDB
+            const updatedUser = await userModel.findOneAndUpdate(
+                { email },
+                update,
+                { new: true }
+            );
+
+            return { 
+                success: true, 
+                remainingGrant: updatedUser[grantField],
+                user: updatedUser
+            };
+        }
+
+        return { 
+            success: true, 
+            remainingGrant: user[grantField],
+            user
+        };
+    } catch (error) {
+        console.error("Grant request error:", error);
+        return { 
+            success: false, 
+            message: "Error processing grant request"
+        };
     }
-
-    return { 
-        success: true, 
-        remainingGrant: user[grantField],
-        user // Return user object for potential additional processing
-    };
 };
-
 // Research grant endpoint
-app.get("/api/user-remaining-grant-research", (req, res) => {
+app.get("/api/user-remaining-grant-research", async (req, res) => {
     const { email } = req.query;
     if (!email) {
         return res.status(400).json({ 
@@ -407,7 +409,7 @@ app.get("/api/user-remaining-grant-research", (req, res) => {
         });
     }
 
-    const result = handleGrantRequest(email, "Research", 20000);
+    const result = await handleGrantRequest(email, "Research", 20000);
     if (!result.success) {
         return res.status(404).json(result);
     }
@@ -441,15 +443,14 @@ app.get("/api/user-remaining-grant-journal", (req, res) => {
     });
 });
 
-app.post("/Submit-Grant", upload.single('customFile'), (req, res) => {
-
+app.post("/Submit-Grant", upload.single('customFile'), async (req, res) => {
     try {
-
         const { submissionType } = req.body;
         const isResearch = submissionType === "research";
         const prefix = isResearch ? "research_" : "journal_";
-
-        // Get email from session or form data
+        const grantType = isResearch ? "research" : "journal";
+        
+        // Get user email from session or form
         const email = req.session.user?.email || req.body[`${prefix}email`];
         if (!email) {
             return res.status(400).json({ 
@@ -458,7 +459,7 @@ app.post("/Submit-Grant", upload.single('customFile'), (req, res) => {
             });
         }
 
-        // Validate file was uploaded
+        // Validate file
         if (!req.file) {
             return res.status(400).json({ 
                 success: false, 
@@ -466,188 +467,128 @@ app.post("/Submit-Grant", upload.single('customFile'), (req, res) => {
             });
         }
 
-
         // Get total grant amount
         const tga = parseFloat(req.body[`${prefix}tga`]) || 0;
         
-
-        // Extract all fields with appropriate prefixes
-        const submissionData = {
-            // Basic info
-            email: req.body[`${prefix}email`],
-            name: req.body[`${prefix}name`],
-            phone: req.body[`${prefix}tel`],
-            
-            // Conference/Journal info
-            conferenceName: req.body[`${prefix}conference_name`],
-            conferenceDate: req.body[`${prefix}conference_date`],
-            venue: req.body[`${prefix}venue`],
-            lastdate: req.body[`${prefix}last_date`],
-            paperTitle: req.body[`${prefix}paper_title`],
-            coauthor: req.body[`${prefix}coauthor_count`],
-            
-            // Bank details
-            bankDetails: {
-                name: req.body[`${prefix}bank_name`],
-                accountNumber: req.body[`${prefix}account_number`],
-                ifsc: req.body[`${prefix}ifsc`]
-            },
-            
-            // Charges
-            charges: {
-                registrationFee: parseFloat(req.body[`${prefix}rf`]) || 0,
-                travelCharges: parseFloat(req.body[`${prefix}tc`]) || 0,
-                lodgingCharges: parseFloat(req.body[`${prefix}lc`]) || 0,
-                totalAmount: tga
-            },
-            
-            // Other fields
-            declaration: req.body[`${prefix}dec`] === "on",
-            filePath: req.file ? req.file.path : null,
-            timestamp: new Date().toISOString(),
-            status: "pending"
-        };
-
-
-
-        const file = req.file; // The uploaded file
-
-        // Validate required fields
-        if (!submissionType || !email || !tga) {
-            return res.status(400).json({ 
-                success: false, 
-                message: "Missing required fields" 
-            });
-        }
-
-        // Validate charges add up
-        const calculatedTotal = submissionData.charges.registrationFee + 
-                            submissionData.charges.travelCharges + 
-                            submissionData.charges.lodgingCharges;
+        // Validate charges
+        const registrationFee = parseFloat(req.body[`${prefix}rf`]) || 0;
+        const travelCharges = parseFloat(req.body[`${prefix}tc`]) || 0;
+        const lodgingCharges = parseFloat(req.body[`${prefix}lc`]) || 0;
+        const calculatedTotal = registrationFee + travelCharges + lodgingCharges;
         
-        if (Math.abs(calculatedTotal - submissionData.charges.totalAmount) > 0.01) {
+        if (Math.abs(calculatedTotal - tga) > 0.01) {
             return res.status(400).json({
                 success: false,
                 message: "Total amount doesn't match sum of individual charges"
             });
         }
 
-
-        const users = userModel.getAllUsers();
-        const userIndex = users.findIndex(u => u.email === email);
-        if (userIndex === -1) {
+        // Find user in MongoDB
+        const user = await userModel.getUserByEmail(email);
+        if (!user) {
             return res.status(404).json({ 
                 success: false, 
                 message: "User not found" 
             });
         }
 
-        const user = users[userIndex];
+        // Handle grant logic
         const now = new Date();
         const currentYear = now.getFullYear();
-        const amountRequested = submissionData.charges.totalAmount;
+        const amountRequested = tga;
 
-        if (isResearch) {
-            if (user.lastGrantYear !== currentYear) {
-                user.remainingResearchGrant = 20000;
-                user.lastGrantYear = currentYear;
-            }
-            if (user.remainingResearchGrant < amountRequested) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: `Requested amount exceeds your remaining research grant of ₹${user.remainingResearchGrant}` 
-                });
-            }
-            user.remainingResearchGrant -= amountRequested;
-        } else {
-            if (user.lastGrantYear !== currentYear) {
-                user.remainingJournalGrant = 30000;
-                user.lastGrantYear = currentYear;
-            }
-            if (user.remainingJournalGrant < amountRequested) {
-                return res.status(400).json({ 
-                    success: false, 
-                    message: `Requested amount exceeds your remaining journal grant of ₹${user.remainingJournalGrant}` 
-                });
-            }
-            user.remainingJournalGrant -= amountRequested;
+        // Reset grants if new year
+        if (user.lastGrantYear !== currentYear) {
+            user.remainingResearchGrant = 20000;
+            user.remainingJournalGrant = 30000;
+            user.lastGrantYear = currentYear;
         }
 
-        // Update user data
-        users[userIndex] = user;
-        fs.writeFileSync(path.join(__dirname, "..", "users.json"), JSON.stringify(users, null, 2));
+        // Check grant balance
+        const grantField = isResearch ? "remainingResearchGrant" : "remainingJournalGrant";
+        if (user[grantField] < amountRequested) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Requested amount exceeds your remaining grant of ₹${user[grantField]}`
+            });
+        }
 
-
-
+        // Upload file to Cloudinary
+        const cloudinaryResult = await cloudinary.uploader.upload(req.file.path, {
+            resource_type: "auto",
+            folder: "geu-submissions",
+            format: "pdf"
+        });
         
+        // Remove local file after upload
+        fs.unlinkSync(req.file.path);
 
-        // Save submission with comprehensive data
-        const submissionDetails = {
-            submissionType,
+        // Calculate remaining balance
+        const remainingBalanceAfter = user[grantField] - amountRequested;
+
+        // Prepare submission data for MongoDB
+        const submissionData = {
             user: {
-                
-                email: submissionData.email,
-                name: submissionData.name
+                name: req.body[`${prefix}name`],
+                email: email,
+                phone: req.body[`${prefix}tel`]
             },
-            researchDetails: {
-                title: submissionData.paperTitle,
-                conference: submissionData.conferenceName,
-                date: submissionData.conferenceDate,
-                venue: submissionData.venue,
-                coAuthors: submissionData.coauthor || [] // If you implement co-author handling
+            submissionType,
+            title: req.body[`${prefix}paper_title`],
+            conference: {
+                name: req.body[`${prefix}conference_name`],
+                date: new Date(req.body[`${prefix}conference_date`]),
+                venue: req.body[`${prefix}venue`],
+                lastDate: new Date(req.body[`${prefix}last_date`])
             },
-            financials: {
-                registrationFee: submissionData.charges.registrationFee,
-                travelCharges: submissionData.charges.travelCharges,
-                lodgingCharges: submissionData.charges.lodgingCharges,
-                totalAmount: submissionData.charges.totalAmount,
-                grantType: isResearch ? 'research' : 'journal',
-                remainingBalance: isResearch ? 
-                    user.remainingResearchGrant : 
-                    user.remainingJournalGrant
+            bankDetails: {
+                name: req.body[`${prefix}bank_name`],
+                accountNumber: req.body[`${prefix}account_number`],
+                ifsc: req.body[`${prefix}ifsc`]
             },
-            bankDetails: submissionData.bankDetails,
-            files: {
-                receiptPath: submissionData.filePath,
-                originalName: req.file?.originalname || null
+            charges: {
+                registrationFee,
+                travelCharges,
+                lodgingCharges,
+                totalAmount: tga
             },
-            declaration: {
-                accepted: submissionData.declaration,
-                timestamp: new Date().toISOString()
-            },
-            metadata: {
-                status: 'pending', // Initial status
-                submittedAt: new Date().toISOString()
-            
-            }
+            coAuthorCount: parseInt(req.body[`${prefix}coauthor_count`]) || 0,
+            receiptUrl: cloudinaryResult.secure_url,
+            declaration: req.body[`${prefix}dec`] === "on",
+            grantType,
+            remainingBalanceAfter
         };
 
+        // Save submission to MongoDB
+        const savedSubmission = await submissionModel.createSubmission(submissionData);
 
-        const savedSubmission = submissionModel.saveSubmission(submissionDetails);
+        // Update user grants in MongoDB
+        const update = {};
+        update[grantField] = remainingBalanceAfter;
+        update.lastGrantYear = currentYear;
+        
+        await userModel.findOneAndUpdate(
+            { email: email },
+            update,
+            { new: true }
+        );
 
         return res.status(200).json({ 
             success: true, 
-            message: submissionType === "research" 
-                ? `Research grant approved. Remaining: ₹${user.remainingResearchGrant}`
-                : `Journal grant approved. Remaining: ₹${user.remainingJournalGrant}`,
-            remainingGrant: submissionType === "research" 
-                ? user.remainingResearchGrant 
-                : user.remainingJournalGrant
+            message: `${isResearch ? "Research" : "Journal"} grant approved. Remaining: ₹${remainingBalanceAfter}`,
+            remainingGrant: remainingBalanceAfter,
+            submissionId: savedSubmission._id
         });
 
     } catch (error) {
         console.error("Submission error:", error);
         return res.status(500).json({ 
             success: false, 
-            message: "Internal server error during submission" 
+            message: "Internal server error during submission",
+            error: error.message
         });
     }
-
-    
-
-
 });
-
 // Add endpoint to serve uploaded files
 app.get('/uploads/:filename', (req, res) => {
     const filePath = path.join(__dirname, 'uploads', req.params.filename);
