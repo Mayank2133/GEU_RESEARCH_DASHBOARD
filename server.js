@@ -61,8 +61,9 @@ app.use(session({
   cookie: {
         httpOnly: true,
         secure: true,         // ✅ required for SameSite: 'none'
-        sameSite: 'none',     // ✅ allows cross-origin session cookies
-        maxAge: 86400000
+        sameSite: 'lax',     // ✅ allows cross-origin session cookies
+        maxAge: 86400000,
+        domain: 'geu-research-dashboard-deloyable.onrender'
   }
 }));
 
@@ -221,6 +222,17 @@ app.post("/login", async (req, res) => {
           remainingResearchGrant: user.remainingResearchGrant,
           remainingJournalGrant: user.remainingJournalGrant,
         };
+        req.session.save(err => {
+            if (err) {
+            console.error("Session save error:", err);
+            return res.status(500).json({ message: "Session save failed" });
+            }
+            return res.json({ 
+            success: true,
+            message: "Login successful!",
+            role: user.role 
+            });
+        });
 
         console.log("✅ Session created after login:", req.session); // debug log
 
