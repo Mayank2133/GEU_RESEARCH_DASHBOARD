@@ -155,6 +155,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// ✅ Serve frontend pages cleanly from /public
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html"));
+});
+
+app.get("/register", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "register.html"));
+});
+
+app.get("/staff-dashboard", (req, res) => {
+  if (req.session.user) {
+    res.sendFile(path.join(__dirname, "public", "staff-dashboard.html"));
+  } else {
+    res.redirect("/login");
+  }
+});
+
 
 
 // Register User Route
