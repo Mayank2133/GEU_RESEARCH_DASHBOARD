@@ -44,6 +44,11 @@ app.use(cors({
 const userModel = require("./models/userModel"); //  NEW import
 const submissionModel = require("./models/submissionModel");
 
+// Middleware
+
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 app.use(session({
   store: MongoStore.create({
@@ -141,11 +146,10 @@ const PORT = process.env.PORT||4000;
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/uploads/profile-pictures', express.static(path.join(__dirname, 'uploads', 'profile-pictures')));
 
-// Middleware
 
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+
+
 
 
 
