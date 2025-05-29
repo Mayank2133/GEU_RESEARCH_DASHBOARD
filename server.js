@@ -150,6 +150,10 @@ app.use('/uploads/profile-pictures', express.static(path.join(__dirname, 'upload
 app.use(express.static(path.join(__dirname, "public")));
 
 
+app.use((req, res, next) => {
+  console.log("🔍 SESSION DEBUG:", req.session);
+  next();
+});
 
 
 
