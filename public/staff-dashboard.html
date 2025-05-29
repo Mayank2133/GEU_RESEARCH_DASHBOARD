@@ -626,22 +626,29 @@
       
     <!--Logout Script-->
     <script>
+        // Define API_BASE
+        const API_BASE = window.location.hostname === "localhost"
+            ? "http://localhost:4000"
+            : "https://geu-research-dashboard-deloyable.onrender.com";
+        // Logout Script
         document.getElementById("logoutBtn").addEventListener("click", async function () {
-            fetch("http://localhost:4000/logout", {
-            method: "POST",
-            credentials: "include"
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                window.location.href = "login.html";
-            } else {
-                alert("Logout failed");
+            try {
+                const res = await fetch(`${API_BASE}/logout`, {
+                    method: "POST",
+                    credentials: "include"
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    window.location.href = "login.html";
+                } else {
+                    alert("Logout failed");
+                }
+            } catch (err) {
+                console.error("Logout error:", err);
+                alert("Logout failed.");
             }
         });
-
-        });
-
     </script>
     
     

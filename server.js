@@ -259,7 +259,7 @@ app.get("/api/user", async (req, res) => {
 // ✅ Dashboard session check
 app.get('/staff-dashboard', (req, res) => {
     if (req.session.user) {
-        res.sendFile(__dirname + '/staff-dashboard.html');
+        res.sendFile(path.join(__dirname, 'staff-dashboard.html'));
     } else {
         res.redirect('/login');
     }
