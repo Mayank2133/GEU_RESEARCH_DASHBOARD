@@ -170,6 +170,21 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
+        document.getElementById("journalCoAuthorCount").addEventListener("change", function() {
+            const container = document.getElementById("journalCoAuthorFields");
+            container.innerHTML = "";
+            
+            for (let i = 1; i <= this.value; i++) {
+                const div = document.createElement("div");
+                div.className = "form-group mt-2";
+                div.innerHTML = `
+                    <label>Co-Author ${i} Name</label>
+                    <input type="text" class="form-control" name="journal_coauthors[]" required>
+                `;
+                container.appendChild(div);
+            }
+        });
+
         //Validation
         let userRemainingGrant = 20000;
         let currentSubmissionType = 'research';
