@@ -599,7 +599,8 @@ app.get('/uploads/:filename', (req, res) => {
     }
 });  
 
-app.get("/api/user-submissions", (req, res) => {
+// Update the route to be async
+app.get("/api/user-submissions", async (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ 
             success: false, 
@@ -609,15 +610,14 @@ app.get("/api/user-submissions", (req, res) => {
 
     const email = req.session.user.email;
     try {
-        const userSubmissions = submissionModel.getUserSubmissions(email);
-        // Ensure we always return an array
+        // Add await here
+        const userSubmissions = await submissionModel.getUserSubmissions(email);
         res.json({ 
             success: true, 
-            submissions: Array.isArray(userSubmissions) 
-                ? userSubmissions 
-                : [] 
+            submissions: userSubmissions 
         });
     } catch (error) {
+        console.error("Error fetching submissions:", error);
         res.status(500).json({ 
             success: false, 
             message: "Server error" 
