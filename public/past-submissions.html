@@ -427,47 +427,46 @@ async function fetchSubmissions() {
         }
 
         const data = await response.json();
+        console.log("API response data:", data);  // Debugging
 
-        if (data.success && data.submissions) {
+        if (data.success && Array.isArray(data.submissions)) {
             // Map submissions with correct structure
             currentState.submissions = data.submissions.map(sub => ({
                 ...sub,
                 title: sub.title || 'Untitled',
-                // Conference info
                 conference: sub.conference?.name || 'Unknown',
                 venue: sub.conference?.venue || 'Unknown',
                 date: sub.conference?.date ? formatDate(sub.conference.date) : 'Unknown',
-                // Financials
                 financials: sub.charges || {
                     registrationFee: 0,
                     travelCharges: 0,
                     lodgingCharges: 0,
                     totalAmount: 0
                 },
-                // Bank details
                 bankDetails: sub.bankDetails || {
                     name: '',
                     accountNumber: '',
                     ifsc: ''
                 },
-                // Status and dates
                 status: sub.status || 'pending',
                 submittedAt: sub.submissionDate ? formatDate(sub.submissionDate) : 'Unknown',
-                // In fetchSubmissions() mapping
                 rawDate: sub.submissionDate?.$date?.$numberLong || null
-                
             }));
             
             renderSubmissions();
         } else {
+            console.error('Unexpected API response:', data);
+            if (data.message) {
+                alert(`Error: ${data.message}`);
+            }
             showEmptyState();
         }
     } catch (error) {
         console.error('Error loading submissions:', error);
+        alert('Failed to load submissions. Please try again later.');
         showEmptyState();
     }
 }
-
 // Helper function to format dates
 function formatDate(dateObj) {
     if (dateObj?.$date?.$numberLong) {

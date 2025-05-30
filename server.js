@@ -601,14 +601,29 @@ app.get('/uploads/:filename', (req, res) => {
 
 app.get("/api/user-submissions", (req, res) => {
     if (!req.session.user) {
-        return res.status(401).json({ success: false, message: "Unauthorized" });
+        return res.status(401).json({ 
+            success: false, 
+            message: "Unauthorized" 
+        });
     }
 
     const email = req.session.user.email;
-    const userSubmissions = submissionModel.getUserSubmissions(email);
-    res.json({ success: true, submissions: userSubmissions });
+    try {
+        const userSubmissions = submissionModel.getUserSubmissions(email);
+        // Ensure we always return an array
+        res.json({ 
+            success: true, 
+            submissions: Array.isArray(userSubmissions) 
+                ? userSubmissions 
+                : [] 
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            message: "Server error" 
+        });
+    }
 });
-
 //pdf
 app.get("/download-submission/:timestamp", (req, res) => {
     const { timestamp } = req.params;
