@@ -1,98 +1,74 @@
-# GEU Research Submission Portal
+# GEU Research Dashboard 🎓📊
 
-## 📌 Project Overview
-A secure web portal for academic staff to submit research papers/journals, track grants, and manage submissions. Built with **Node.js**, **Express**, and **Bootstrap**.
+> A comprehensive research management system for Graphic Era University faculty, streamlining grant applications, submissions, and academic workflows.
 
-![Register Preview](./screenshots/register.png)
-![Login Preview](./screenshots/login.png)
-![Dashboard Preview](./screenshots/dashboard.png)
-![Research/Journal Submission Preview](./screenshots/research.png)
-![Submission Preview](./screenshots/submission.png)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Available-success)](https://geu-research-dashboard-deloyable.onrender.com)
+![Tech Stack](https://img.shields.io/badge/Stack-MERN-61DAFB?logo=react&logoColor=white)
 
-## 🚀 Key Features
-- **Role-Based Access** (Staff/Dean/Accountant)
-- **Dual Submission System** (Research/Journal)
-- **Annual Grant Limits** (₹20k Research/₹30k Journal)
-- **PDF Validation** (10MB max, MIME type check)
-- **Dynamic Co-Author Management**
-- **Submission History Tracking**
-- **Secure Session Management**
+![Dashboard Preview](./public/screenshot-dashboard.png) *Example: Faculty Dashboard Interface*
 
-## 📂 Project Structure
-/research-portal
-├── public
-│ ├── submitResearch.htm # Main submission form
-│ ├── past-submissions.html # Submission history
-│ ├── staff-dashboard.html # User dashboard
-│ ├── login.html # Login page
-│ ├── register.htm # Registration page
-│ └── assets/ # CSS/JS/Images
-├── uploads
-│ ├── submissions/ # Research PDF storage
-│ └── profile-pictures/ # User avatars
-├── models
-│ ├── users.json # User database
-│ └── submissions.json # Submission records
-├── server.js # Backend server
-├── package.json # Dependencies
-├── .env # Config file
-└── README.md # This documentation
+## 🌟 Key Features
 
+### 👨‍💻 Faculty Capabilities
+- **Grant Management**  
+  - Research (₹20,000) & Journal (₹30,000) grants with annual reset
+  - Real-time balance tracking
+- **Paper Submission System**
+  - Research paper and journal submission workflows
+  - Cloudinary-based PDF uploads
+- **Personal Dashboard**
+  - Profile management with image uploads
+  - Submission history tracking
+  - Contact information management
 
+### ⚙️ Technical Highlights
+- **Secure Authentication**
+  - Session-based auth with bcrypt password hashing
+  - Role-based access control
+- **Document Management**
+  - PDF validation and Cloudinary storage
+  - Automatic file cleanup
+- **Responsive Design**
+  - Mobile-friendly dashboard with collapsible sidebar
+  - Bootstrap 5 components with custom styling
+- **Automated Grants System**
+  - Yearly grant reset logic
+  - Balance deduction on submission
 
-## 🛠️ Setup Instructions
+## 🛠 Technology Stack
 
-### 1️⃣ Install Dependencies
-Ensure **Node.js** is installed, then run:
-```sh
-npm install express body-parser bcrypt pdfkit multer axios dotenv
-```
+### Core Components
+| Layer               | Technology               |
+|---------------------|--------------------------|
+| **Frontend**        | HTML5, Bootstrap 5, Vanilla JS |
+| **Backend**         | Node.js, Express.js      |
+| **Database**        | MongoDB (Mongoose ODM)   |
+| **Authentication**  | Express-sessions, bcrypt |
+| **Storage**         | Cloudinary (PDF/Images)  |
+| **Security**        | reCAPTCHA v2             |
 
-### 2️⃣ Start the Server
-```sh
-node server.js
-```
-The server runs on **http://localhost:4000/**
+### Infrastructure
+- **Hosting**: Render.com
+- **Environment Management**: Dotenv
+- **PDF Processing**: PDFKit
+- **HTTP Client**: Axios
 
-### 3️⃣ Open the App
-- Open `http://localhost:4000/register.html` to register a user.
-- Open `http://localhost:4000/login.html` to log in.
-- If login is successful, you'll be redirected to `staff-dashboard.html`.
+## 🚀 Deployment
 
-## 📜 API Endpoints
-| Method | Endpoint      | Description |
-|--------|-------------|-------------|
-| POST   | /register   | Registers a new user |
-| POST   | /login      | Authenticates a user |
-| GET    | /dashboard  | Fetches user details |
+The application is deployed on **Render.com** using:
+- **Web Service**: Node.js environment
+- **Database**: MongoDB Atlas cluster
+- **Storage**: Cloudinary for media assets
 
-## 🔒 Security Features
--**reCAPTCHA v3 integration**
+**Live Demo**: [https://geu-research-dashboard-deloyable.onrender.com](https://geu-research-dashboard-deloyable.onrender.com)
 
--**Password hashing with bcrypt**
+## ⚙️ Installation
 
--**Session cookie protection**
+1. **Clone repository**
+   ```bash
+   git clone https://github.com/Mayank2133/GEU_RESEARCH_DASHBOARD.git
+   cd GEU_RESEARCH_DASHBOARD
 
--**File type validation**
-
--**Input sanitization**
-
-## 📅 Future Roadmap
--**MongoDB integration**
-
--**Admin approval workflow**
-
--**Email notifications**
-
--**Multi-file upload support**
-
--**PDF content analysis**
-
-
-
-## 👨‍💻 Author
-[Mayank] - Developed as part of a learning project.
-
----
-### 🎯 If you found this useful, don't forget to ⭐ the repo!
-
+2. **Install dependencies**
+   npm install
