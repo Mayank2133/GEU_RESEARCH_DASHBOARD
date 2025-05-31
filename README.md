@@ -6,7 +6,7 @@
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Available-success)](https://geu-research-dashboard-deloyable.onrender.com)
 ![Tech Stack](https://img.shields.io/badge/Stack-MERN-61DAFB?logo=react&logoColor=white)
 
-![Dashboard Preview](./public/screenshot-dashboard.png) *Example: Faculty Dashboard Interface*
+
 
 ## 🌟 Key Features
 
@@ -71,4 +71,5 @@ The application is deployed on **Render.com** using:
    cd GEU_RESEARCH_DASHBOARD
 
 2. **Install dependencies**
+   ```bash
    npm install
