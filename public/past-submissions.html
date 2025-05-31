@@ -449,7 +449,7 @@ async function fetchSubmissions() {
                     ifsc: ''
                 },
                 status: sub.status || 'pending',
-                submittedAt: sub.submissionDate ? formatDate(sub.submissionDate) : 'Unknown',
+                submittedAt: formatDate(sub.submissionDate),
                 rawDate: sub.submissionDate?.$date?.$numberLong || null
             }));
             
@@ -468,20 +468,36 @@ async function fetchSubmissions() {
     }
 }
 // Helper function to format dates
+// Replace the current formatDate function with this:
 function formatDate(dateObj) {
+    let timestamp;
+    
+    // Handle MongoDB extended JSON format
     if (dateObj?.$date?.$numberLong) {
-      const date = new Date(parseInt(dateObj.$date.$numberLong));
-      return date.toLocaleString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+        timestamp = parseInt(dateObj.$date.$numberLong);
+    } 
+    // Handle ISO date strings
+    else if (typeof dateObj === 'string' || dateObj instanceof String) {
+        timestamp = new Date(dateObj).getTime();
+    } 
+    // Handle Date objects
+    else if (dateObj instanceof Date) {
+        timestamp = dateObj.getTime();
     }
+    
+    if (timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+    
     return 'Unknown';
-  }
-                
+}      
          
 
         // Render submissions based on current state
