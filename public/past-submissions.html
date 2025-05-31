@@ -549,7 +549,7 @@ function formatDate(dateObj) {
             
             const submissionElement = document.createElement('div');
             submissionElement.className = `submission-entry ${submission.submissionType} ${submission.status}`;
-            submissionElement.dataset.date = submission.metadata.submittedAt;
+            
             
             submissionElement.innerHTML = `
                 <div class="card mb-4 submission-card">
@@ -564,7 +564,7 @@ function formatDate(dateObj) {
                                         <i class="fas ${statusIcon} me-1"></i>${statusText}
                                     </span>
                                     <span class="text-muted ms-3">
-                                        <i class="far fa-calendar-alt me-1"></i>${formattedDate}
+                                        <i class="far fa-calendar-alt me-1"></i>${submission.submittedAt}
                                     </span>
                                 </div>
                                 <h5 class="card-title">${submission.title}</h5>
