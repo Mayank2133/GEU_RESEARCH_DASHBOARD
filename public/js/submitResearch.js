@@ -199,8 +199,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Initial setup
         updateGrantLimit().then(() => {
-            setupValidation("research");
-            setupValidation("journal");
+           setupAutoCalculationAndValidation('research');
+           setupAutoCalculationAndValidation('journal');
         });
 
        
@@ -226,67 +226,52 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
 
-        function setupValidation(prefix) {
-            const form = document.getElementById(`${prefix}Form`);
-            if (!form) return;
-
-            // Get relevant form elements
-            const reg = form.querySelector(`[name="${prefix}_rf"]`);
-            const travel = form.querySelector(`[name="${prefix}_tc"]`);
-            const lodge = form.querySelector(`[name="${prefix}_lc"]`);
-            const total = form.querySelector(`[name="${prefix}_tga"]`);
-            const submitBtn = form.querySelector(`[type="submit"]`);
+                // Add this function to handle both auto-calculation and validation
+        function setupAutoCalculationAndValidation(prefix) {
+            const rf = document.querySelector(`[name="${prefix}_rf"]`);
+            const tc = document.querySelector(`[name="${prefix}_tc"]`);
+            const lc = document.querySelector(`[name="${prefix}_lc"]`);
+            const tga = document.querySelector(`[name="${prefix}_tga"]`);
+            const submitBtn = document.querySelector("button[type='submit']");
+            
+            if (!rf || !tc || !lc || !tga) return;
 
             // Create error display element if it doesn't exist
-            let errorBox = form.querySelector(".grant-error");
+            let errorBox = tga.parentNode.querySelector(".grant-error");
             if (!errorBox) {
                 errorBox = document.createElement("div");
-                errorBox.className = "grant-error";
+                errorBox.className = "grant-error mt-2";
                 errorBox.style.color = "red";
-                errorBox.style.marginTop = "10px";
-                if (total && total.parentNode) {
-                    total.parentNode.appendChild(errorBox);
+                tga.parentNode.appendChild(errorBox);
+            }
+
+            const calculateAndValidate = () => {
+                // Calculate total
+                const rfValue = parseFloat(rf.value) || 0;
+                const tcValue = parseFloat(tc.value) || 0;
+                const lcValue = parseFloat(lc.value) || 0;
+                const total = rfValue + tcValue + lcValue;
+                
+                tga.value = total;
+                
+                // Validate against grant limit
+                if (total > userRemainingGrant) {
+                    errorBox.textContent = `Exceeds remaining limit (₹${userRemainingGrant.toFixed(2)})`;
+                    if (submitBtn) submitBtn.disabled = true;
+                } else {
+                    errorBox.textContent = "";
+                    if (submitBtn) submitBtn.disabled = false;
                 }
-            }
+            };
 
-            // Add event listeners to all relevant inputs
-            [reg, travel, lodge, total].forEach(input => {
-                if (input) {
-                    input.addEventListener("input", () => {
-                        validateTotals(prefix, reg, travel, lodge, total, submitBtn, errorBox);
-                    });
-                }
-            });
+            // Add event listeners
+            rf.addEventListener('input', calculateAndValidate);
+            tc.addEventListener('input', calculateAndValidate);
+            lc.addEventListener('input', calculateAndValidate);
+            
+            // Initial calculation
+            calculateAndValidate();
         }
-
-        function validateTotals(prefix, reg, travel, lodge, total, submitBtn, errorBox) {
-            const r = parseFloat(reg?.value) || 0;
-            const t = parseFloat(travel?.value) || 0;
-            const l = parseFloat(lodge?.value) || 0;
-            const enteredTotal = parseFloat(total?.value) || 0;
-            const expectedSum = r + t + l;
-
-            if (isNaN(enteredTotal)) {
-                errorBox.textContent = "Please enter a valid number";
-                if (submitBtn) submitBtn.disabled = true;
-                return;
-            }
-
-            if (Math.abs(enteredTotal - expectedSum) > 0.01) {
-                errorBox.textContent = `Total must equal sum of charges (₹${expectedSum.toFixed(2)})`;
-                if (total) total.setCustomValidity("Mismatch with component charges");
-                if (submitBtn) submitBtn.disabled = true;
-            } else if (enteredTotal > userRemainingGrant) {
-                errorBox.textContent = `Exceeds remaining limit (₹${userRemainingGrant.toFixed(2)})`;
-                if (total) total.setCustomValidity("Exceeds remaining grant");
-                if (submitBtn) submitBtn.disabled = true;
-            } else {
-                errorBox.textContent = "";
-                if (total) total.setCustomValidity("");
-                if (submitBtn) submitBtn.disabled = false;
-            }
-        }
-
         // Fix field name mismatches
         function updateFieldNames() {
             const type = document.getElementById("submissionType").value;
