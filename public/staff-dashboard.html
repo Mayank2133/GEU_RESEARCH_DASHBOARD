@@ -341,11 +341,23 @@
         background-color: #f8f9fa;
         border-radius: 50%;
     }
+     /* Add this to your existing styles */
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
 
         
     </style>
 </head>
 <body>
+
+    <!-- Add this at the top of the body -->
+    <div id="loading-overlay" 
+        style="position:fixed;top:0;left:0;width:100%;height:100%;background:white;z-index:9999;display:flex;justify-content:center;align-items:center;flex-direction:column;">
+    <div class="spinner" style="border: 4px solid rgba(0, 0, 0, 0.1);border-radius: 50%;border-top: 4px solid #3498db;width: 40px;height: 40px;animation: spin 1s linear infinite;"></div>
+    <p style="margin-top: 20px;font-size: 18px;">Loading dashboard...</p>
+    </div>
 
     
    
@@ -489,6 +501,7 @@
                 
 </div>
 <script>
+    const loadingOverlay = document.getElementById('loading-overlay');
   const sidebar = document.getElementById("sidebar");
   const menuToggle = document.getElementById("menuToggle");
 
@@ -538,6 +551,10 @@
       document.getElementById("userRole").textContent = user.role;
       document.getElementById("userdesignation").textContent = user.designation;
       document.getElementById("userphno").textContent = user.phno;
+      // Hide loading overlay with a slight delay for better UX
+        setTimeout(() => {
+        loadingOverlay.style.display = 'none';
+        }, 500);
 
       // Set profile picture
       if (user.profileUrl) {
