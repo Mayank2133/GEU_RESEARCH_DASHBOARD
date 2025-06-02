@@ -721,12 +721,12 @@ app.get("/download-submission/:timestamp", (req, res) => {
 
 
 
-// ✅ Serve HTML Pages
+//  Serve HTML Pages
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "public", "register.htm")));
 app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "public", "login.html")));
 app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "public", "staff-dashboard.html")));
 
-// ✅ Google reCAPTCHA
+//  Google reCAPTCHA
 app.post("/verify-recaptcha", async (req, res) => {
     const { token } = req.body;
 
